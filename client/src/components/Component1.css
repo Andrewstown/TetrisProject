@@ -1,0 +1,33 @@
+@font-face {
+    font-family: block;
+    src: url('./client/font.ttf');
+}
+
+#little-box
+{
+  background-color: #6694d5;
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  top: 0px;
+  left: 0px;
+  margin: 40px 177px 0 177px;
+  border-style: outset;
+  border-width: 20px;
+  border-color: #6694d5;
+  border-radius: 5px;
+}
+
+.original-blue{
+    top: 0px;
+    left: 0px;
+    width: 25px;
+    height: 25px;
+    margin: 40px 177px 0 177px;
+    position: absolute;
+    background-color: #6694d5;
+}
+
+.text{
+    font-family: block;
+}
