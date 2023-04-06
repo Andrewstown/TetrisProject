@@ -1,6 +1,6 @@
 @font-face {
     font-family: block;
-    src: url('./client/font.ttf');
+    src: url('../../font.ttf');
 }
 
 #little-box
@@ -18,15 +18,15 @@
   border-radius: 5px;
 }
 
-.original-blue{
-    top: 0px;
-    left: 0px;
-    width: 25px;
-    height: 25px;
-    margin: 40px 177px 0 177px;
+/* .original-red{
+    top: 100px;
+    left: 100px;
+    width: 32px;
+    height: 32px;
     position: absolute;
-    background-color: #6694d5;
-}
+    background: url('/blocksprites/original.png') -64px;
+    transform:scale(1.5);
+} */
 
 .text{
     font-family: block;

@@ -29,28 +29,23 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    bio = db.Column(db.String, default='')
-    img = db.Column(db.String, default='https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/')
     name = db.Column(db.String)
-    email = db.Column(db.String)
+    avatar = db.Column(db.String, default='https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/')
+    points = db.Column(db.Integer, default=0)
     password = db.Column(db.String)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     user_games = db.relationship('UserGame', backref='user')
+    user_avatars = db.relationship('UserAvatar', backref='user')
+    user_sprites = db.relationship('UserSprite', backref='user')
 
-    serialize_rules = ('-user_games.user',)
+    serialize_rules = ('-user_games.user', '-user_sprites.user', '-user_avatars.user')
 
     @validates('name')
     def validate_name(self, key, value):
         if len(value) < 1 or len(value) > 20:
             raise ValueError('Please enter a Username between 1-20 characters')
-        return value
-
-    @validates('email')
-    def validate_email(self, key, value):
-        if len(value) < 7 and not '@' in value:
-            raise ValueError('Please enter a valid Email')
         return value
 
     @validates('password')
@@ -66,90 +61,58 @@ class Game(db.Model, SerializerMixin):
     __tablename__ = 'games'
 
     id = db.Column(db.Integer, primary_key=True)
-    img = db.Column(db.String)
+    image = db.Column(db.String)
     price = db.Column(db.Float)
-    genre = db.Column(db.String)
     title = db.Column(db.String)
-    studio = db.Column(db.String)
     description = db.Column(db.String)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    game_reviews = db.relationship('Review', backref='game')
-
-    serialize_rules = ('-game_reviews.game',)
-
-    @validates('img')
-    def validate_img(self, key, value):
-        if len(value) < 0:
-            raise ValueError('Please enter an Image')
-        return value
-
-    @validates('price')
-    def validate_price(self, key, value):
-        if value < 0:
-            raise ValueError('Please enter a valid Price')
-        return value
-
-    @validates('genre')
-    def validate_genre(self, key, value):
-        if len(value) < 0:
-            raise ValueError('Please enter a Genre')
-        return value
-
-    @validates('title')
-    def validate_title(self, key, value):
-        if len(value) < 0:
-            raise ValueError('Please enter a Title')
-        return value
-
-    @validates('studio')
-    def validate_title(self, key, value):
-        if len(value) < 0:
-            raise ValueError('Please enter a Studio')
-        return value
-
-    @validates('description')
-    def validate_description(self, key, value):
-        if len(value) < 20:
-            raise ValueError('Please enter a Description with at least 20 characters')
-        return value
-    
     def __repr__(self):
         return f'<game title:{self.title}, price:{self.price}, genre: {self.genre}, description: {self.description}>'
 
-class Review(db.Model, SerializerMixin):
-    __tablename__ = 'reviews'
+class Avatar(db.Model, SerializerMixin):
+    __tablename__ = 'avatars'
 
     id = db.Column(db.Integer, primary_key=True)
-    rating = db.Column(db.Integer)
-    description = db.Column(db.String)
+    name = db.Column(db.String)
+    image = db.Column(db.String)
+    price = db.Column(db.Float)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
-    game_id = db.Column(db.Integer, db.ForeignKey('games.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+class Sprite(db.Model, SerializerMixin):
+    __tablename__ = 'sprites'
 
-    @validates('rating')
-    def validate_rating(self, key, value):
-        if value < 1 or value > 10:
-            raise ValueError('Rating must be 1-10')
-        return value
-
-    @validates('description')
-    def validate_description(self, key, value):
-        if len(value) < 0:
-            raise ValueError('Please enter a Review')
-        return value
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    image = db.Column(db.String)
+    price = db.Column(db.Float)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 class UserGame(db.Model, SerializerMixin):
-    __tablename__ = 'user_games'
+    __tablename__ = 'usergames'
 
     id = db.Column(db.Integer, primary_key=True)
-    last_played = db.Column(db.DateTime, default=datetime.datetime.utcnow)
-    hours_played = db.Column(db.Integer, default='0')
-    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    highscore = db.Column(db.Integer, default='0')
     
     game_id = db.Column(db.Integer, db.ForeignKey('games.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+class UserAvatar(db.Model, SerializerMixin):
+    __tablename__ = 'useravatars'
+
+    id = db.Column(db.Integer, primary_key=True)
+    highscore = db.Column(db.Integer, default='0')
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    avatar_id = db.Column(db.Integer, db.ForeignKey('avatars.id'))
+
+class UserSprite(db.Model, SerializerMixin):
+    __tablename__ = 'usersprites'
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    sprite_id = db.Column(db.Integer, db.ForeignKey('sprites.id'))

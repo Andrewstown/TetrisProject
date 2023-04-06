@@ -6,7 +6,13 @@ import Component1 from './Component1'
 export const UserContext = createContext(null)
 
 export default function App(){
-  const [user, setUser] = useState('Andrew')
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    fetch('/users')
+    .then(r => r.json())
+    .then(users => setUser(users[0]))
+  }, [])
 
   return(
     <main className='app'>
