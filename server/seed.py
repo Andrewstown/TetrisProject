@@ -19,82 +19,60 @@ if __name__ == '__main__':
 
         print('Creating Users...')
         user = User(
+            xp = 500,
             name = 'andrew',
-            avatar = 'https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/',
-            points = 0,
+            coins = 1000,
+            level = 10,
+            avatar = '/avatars/dog.png',
             password = '123'
         )
         db.session.add(user)
 
-        # for i in range(70):
-        #     user = User(
-        #         bio = f.paragraph(nb_sentences=5), 
-        #         img = randint(1, 3) == 1 and 'https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/' or userTemp['images'][randint(0, len(userTemp['images'])-1)],
-        #         name = f.first_name(),
-        #         email = f.email(),
-        #         password = userTemp['passwords'][randint(0, len(userTemp['passwords'])-1)],
-        #         created_at = f.date_between(start_date=datetime(2003, 9, 12))
-        #     )
-        #     db.session.add(user)
-
-        # print('Creating Games...')
-        # for i in range(100):
-        #     game = Game(
-        #         img = gameTemp['images'][randint(0, len(gameTemp['images'])-1)],
-        #         price = gameTemp['prices'][randint(0, len(gameTemp['prices'])-1)],
-        #         genre = gameTemp['genres'][randint(0, len(gameTemp['genres'])-1)],
-        #         title = gameTemp['titles'][randint(0, len(gameTemp['titles'])-1)],
-        #         studio = gameTemp['studios'][randint(0, len(gameTemp['studios'])-1)],
-        #         description = gameTemp['descriptions'][randint(0, len(gameTemp['descriptions'])-1)],
-        #         created_at = f.date_between(start_date=datetime(2003, 9, 12)),
-        #     )
-        #     game.updated_at = f.date_between(start_date=game.created_at)
-        #     db.session.add(game)
-
         print('Creating Avatars...')
-        avatars = {
-            Avatar(name = 'guest', image = 'https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/', price = 0.0),
-            # Avatar(name = 'purple', image = '/avatars/purple.png', price = 0.0),
-            # Avatar(name = 'blue', image = '/avatars/blue.png', price = 0.0),
-            # Avatar(name = 'lightblue', image = '/avatars/lightblue.png', price = 0.0),
-            # Avatar(name = 'green', image = '/avatars/green.png', price = 0.0),
-            # Avatar(name = 'yellow', image = '/avatars/yellow.png', price = 0.0),
-            # Avatar(name = 'orange', image = '/avatars/orange.png', price = 0.0),
-            # Avatar(name = 'red', image = '/avatars/red.png', price = 0.0),
-            # Avatar(name = 'ant', image = '/avatars/ant.png', price = 0.0),
-            # Avatar(name = 'bear', image = '/avatars/bear.png', price = 0.0),
-            # Avatar(name = 'bee', image = '/avatars/bee.png', price = 0.0),
-            # Avatar(name = 'bird', image = '/avatars/bird.png', price = 0.0),
-            # Avatar(name = 'bunny', image = '/avatars/bunny.png', price = 0.0),
-            # Avatar(name = 'cat', image = '/avatars/cat.png', price = 0.0),
-            # Avatar(name = 'chicken', image = '/avatars/chicken.png', price = 0.0),
-            # Avatar(name = 'cow', image = '/avatars/cow.png', price = 0.0),
-            # Avatar(name = 'crab', image = '/avatars/crab.png', price = 0.0),
-            # Avatar(name = 'dog', image = '/avatars/dog.png', price = 0.0),
-            # Avatar(name = 'domo', image = '/avatars/domo.png', price = 0.0),
-            # Avatar(name = 'dragon', image = '/avatars/dragon.png', price = 0.0),
-            # Avatar(name = 'eagle', image = '/avatars/eagle.png', price = 0.0),
-            # Avatar(name = 'elephant', image = '/avatars/elephant.png', price = 0.0),
-            # Avatar(name = 'fish', image = '/avatars/fish.png', price = 0.0),
-            # Avatar(name = 'frog', image = '/avatars/frog.png', price = 0.0),
-            # Avatar(name = 'goat', image = '/avatars/goat.png', price = 0.0),
-            # Avatar(name = 'koala', image = '/avatars/koala.png', price = 0.0),
-            # Avatar(name = 'lizard', image = '/avatars/lizard.png', price = 0.0),
-            # Avatar(name = 'monkey', image = '/avatars/monkey.png', price = 0.0),
-            # Avatar(name = 'mouse', image = '/avatars/mouse.png', price = 0.0),
-            # Avatar(name = 'octopus', image = '/avatars/octopus.png', price = 0.0),
-            # Avatar(name = 'ogre', image = '/avatars/ogre.png', price = 0.0),
-            # Avatar(name = 'panda', image = '/avatars/panda.png', price = 0.0),
-            # Avatar(name = 'pig', image = '/avatars/pig.png', price = 0.0),
-            # Avatar(name = 'polarbear', image = '/avatars/polarbear.png', price = 0.0),
-            # Avatar(name = 'racoon', image = '/avatars/racoon.png', price = 0.0),
-            # Avatar(name = 'rhino', image = '/avatars/rhino.png', price = 0.0),
-            # Avatar(name = 'shark', image = '/avatars/shark.png', price = 0.0),
-            # Avatar(name = 'sheep', image = '/avatars/sheep.png', price = 0.0),
-            # Avatar(name = 'spider', image = '/avatars/spider.png', price = 0.0),
-            # Avatar(name = 'tiger', image = '/avatars/tiger.png', price = 0.0),
-            # Avatar(name = 'turtle', image = '/avatars/turtle.png', price = 0.0)
-        }
+        avatars = [
+            Avatar(name = 'guest', image = '/avatars/guest.png', price = 0.0),
+            Avatar(name = 'unknown', image = '/avatars/unknown.png', price = 0.0),
+            Avatar(name = 'purple', image = '/avatars/purple.png', price = 0.0),
+            Avatar(name = 'blue', image = '/avatars/blue.png', price = 0.0),
+            Avatar(name = 'lightblue', image = '/avatars/lightblue.png', price = 0.0),
+            Avatar(name = 'green', image = '/avatars/green.png', price = 0.0),
+            Avatar(name = 'yellow', image = '/avatars/yellow.png', price = 0.0),
+            Avatar(name = 'orange', image = '/avatars/orange.png', price = 0.0),
+            Avatar(name = 'red', image = '/avatars/red.png', price = 0.0),
+            Avatar(name = 'ant', image = '/avatars/ant.png', price = 0.0),
+            Avatar(name = 'bear', image = '/avatars/bear.png', price = 0.0),
+            Avatar(name = 'bee', image = '/avatars/bee.png', price = 0.0),
+            Avatar(name = 'bird', image = '/avatars/bird.png', price = 0.0),
+            Avatar(name = 'bunny', image = '/avatars/bunny.png', price = 0.0),
+            Avatar(name = 'cat', image = '/avatars/cat.png', price = 0.0),
+            Avatar(name = 'chicken', image = '/avatars/chicken.png', price = 0.0),
+            Avatar(name = 'cow', image = '/avatars/cow.png', price = 0.0),
+            Avatar(name = 'crab', image = '/avatars/crab.png', price = 0.0),
+            Avatar(name = 'dog', image = '/avatars/dog.png', price = 0.0),
+            Avatar(name = 'domo', image = '/avatars/domo.png', price = 0.0),
+            Avatar(name = 'dragon', image = '/avatars/dragon.png', price = 0.0),
+            Avatar(name = 'eagle', image = '/avatars/eagle.png', price = 0.0),
+            Avatar(name = 'elephant', image = '/avatars/elephant.png', price = 0.0),
+            Avatar(name = 'fish', image = '/avatars/fish.png', price = 0.0),
+            Avatar(name = 'frog', image = '/avatars/frog.png', price = 0.0),
+            Avatar(name = 'goat', image = '/avatars/goat.png', price = 0.0),
+            Avatar(name = 'koala', image = '/avatars/koala.png', price = 0.0),
+            Avatar(name = 'lizard', image = '/avatars/lizard.png', price = 0.0),
+            Avatar(name = 'monkey', image = '/avatars/monkey.png', price = 0.0),
+            Avatar(name = 'mouse', image = '/avatars/mouse.png', price = 0.0),
+            Avatar(name = 'octopus', image = '/avatars/octopus.png', price = 0.0),
+            Avatar(name = 'ogre', image = '/avatars/ogre.png', price = 0.0),
+            Avatar(name = 'panda', image = '/avatars/panda.png', price = 0.0),
+            Avatar(name = 'pig', image = '/avatars/pig.png', price = 0.0),
+            Avatar(name = 'polarbear', image = '/avatars/polarbear.png', price = 0.0),
+            Avatar(name = 'racoon', image = '/avatars/racoon.png', price = 0.0),
+            Avatar(name = 'rhino', image = '/avatars/rhino.png', price = 0.0),
+            Avatar(name = 'shark', image = '/avatars/shark.png', price = 0.0),
+            Avatar(name = 'sheep', image = '/avatars/sheep.png', price = 0.0),
+            Avatar(name = 'spider', image = '/avatars/spider.png', price = 0.0),
+            Avatar(name = 'tiger', image = '/avatars/tiger.png', price = 0.0),
+            Avatar(name = 'turtle', image = '/avatars/turtle.png', price = 0.0)
+        ]
         db.session.add_all([avatar for avatar in avatars])
 
         print('Creating Sprites...')

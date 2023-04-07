@@ -29,9 +29,12 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
+    xp = db.Column(db.Integer, default=0)
     name = db.Column(db.String)
-    avatar = db.Column(db.String, default='https://steamuserimages-a.akamaihd.net/ugc/885384897182110030/F095539864AC9E94AE5236E04C8CA7C2725BCEFF/')
-    points = db.Column(db.Integer, default=0)
+    coins = db.Column(db.Integer, default=0)
+    level = db.Column(db.Integer, default=0)
+    avatar = db.Column(db.String, default='/avatars/unknown.png')
+    sprite = db.Column(db.String, default='/sprites/original.png')
     password = db.Column(db.String)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)

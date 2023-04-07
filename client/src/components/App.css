@@ -1,0 +1,13 @@
+@font-face {
+    font-family: block;
+    src: url('../../font.ttf');
+}
+
+.text{
+    font-family: block;
+}
+
+body{
+    background-image: linear-gradient(#2BA6FF, white);
+    background-attachment: fixed;
+}

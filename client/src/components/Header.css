@@ -1,0 +1,118 @@
+#xp{
+  top: 92px;
+  left: 177px;
+  font-size: 26px;
+  border-width: 20px;
+  -webkit-text-stroke: 1.7px black;
+}
+
+.nav{
+  
+}
+
+.coin{
+  top: 79px;
+  left: 190px;
+  width: 45px;
+  z-index: 3;
+  position: fixed;
+}
+
+.link{
+  color: whitesmoke;
+  z-index: 2;
+  position: fixed;
+  font-family: block;
+  border-color: #1685d2;
+  border-style: ridge;
+  border-width: 20px;
+  -webkit-text-stroke: 1.7px black;
+}
+
+.link:link {
+  text-decoration: none;
+}
+
+.link:visited {
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link:active {
+  text-decoration: underline;
+}
+
+.logo{
+  top: 37px;
+  right: 2.5%;
+  width: 135px;
+  position: fixed;
+}
+
+#name{
+  top: -41px;
+  left: 177px;
+  font-size: 40px;
+  -webkit-text-stroke: 3px black;
+}
+
+.text{
+  color: whitesmoke;
+  z-index: 2;
+  position: fixed;
+  border-color: #1685d2;
+  border-style: ridge;
+  border-width: 20px;
+}
+
+#coins{
+  top: 39px;
+  left: 177px;
+  font-size: 27px;
+  -webkit-text-stroke: 1.7px black;
+}
+
+#level{
+  top: 92px;
+  left: 379px;
+  font-size: 26px;
+  z-index: 2;
+  -webkit-text-stroke: 1.7px black;
+}
+
+.avatar{
+  top: 0px;
+  left: 0px;
+  width: 148px;
+  z-index: 1;
+  position: fixed;
+  border-color: #1685d2;
+  border-style: ridge;
+  border-width: 20px;
+}
+
+#xp-bar{
+  top: 138px;
+  left: 260px;
+  width: 119px;
+  height: 30px;
+  position: fixed;
+  font-size: 27px;
+  background-color: #b1daf7;
+}
+
+.backdrop{
+  top: 0vw;
+  left: 0vw;
+  width: 97.7vw;
+  height: 8vw;
+  z-index: 0;
+  position: fixed;
+  border-color: #1685d2;
+  border-style: ridge;
+  border-width: 1.3vw;
+  background-color: #38a0ea;
+}
