@@ -1,0 +1,141 @@
+.font{
+  top: 6vw;
+  left: 1vw;
+  color: white;
+  position: fixed;
+  font-size: 4.5vw;
+  font-family: block;
+  -webkit-text-stroke: 0.2vw black;
+}
+
+#next{
+  left: 59vw;
+  width: 5.5vw;
+  height: 28vw;
+}
+
+#cell1{
+  top: 18vw;
+  left: 59vw;
+  width: 5.5vw;
+  height: 5.5vw;
+}
+
+#cell2{
+  top: 24.5vw;
+  left: 59.25vw;
+  width: 5vw;
+  height: 5vw;
+}
+
+#cell3{
+  top: 30.5vw;
+  left: 59.5vw;
+  width: 4.5vw;
+  height: 4.5vw;
+}
+
+#cell4{
+  top: 36vw;
+  left: 59.5vw;
+  width: 4.5vw;
+  height: 4.5vw;
+}
+
+#cell5{
+  top: 41.5vw;
+  left: 59.5vw;
+  width: 4.5vw;
+  height: 4.5vw;
+}
+
+.field{
+  top: 15.4vw;
+  left: 39.5vw;
+  width: 17vw;
+  z-index: 1;
+  position: fixed;
+}
+
+#score{
+  top: 11vw;
+  left: 39vw;
+  width: 18vw;
+  height: 4vw;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: right;
+}
+
+#score p{
+  color: yellow;
+  font-size: 4vw;
+  font-family: block;
+  -webkit-text-stroke: 0.3vw black;
+}
+
+.border{
+  top: 18vw;
+  left: 31.5vw;
+  width: 5.5vw;
+  height: 5.5vw;
+  position: fixed;
+  box-shadow:
+    0 0 0 0.8vw #F5F1F2,
+    0 0 0 1.2vw #6E6E6E;
+  border-radius: 0.6vw;
+  background-color: #F5F1F2;
+}
+
+.intext{
+  top: 12.6vw;
+  left: 31.2vw;
+  color: black;
+  position: fixed;
+  font-size: 2.25vw;
+  font-family: block;
+  -webkit-text-stroke: 0.1svw #F5F1F2;
+}
+
+.outtext{
+  top: 12.6vw;
+  left: 31.2vw;
+  color: #F5F1F2;
+  position: fixed;
+  font-size: 2.25vw;
+  font-family: block;
+  -webkit-text-stroke: 0.7vw #6E6E6E;
+}
+
+#nexttext{
+  left: 59vw;
+  width: 6vw;
+  height: 28vw;
+}
+
+.blockcell{
+  top: 18vw;
+  left: 31.5vw;
+  width: 5.5vw;
+  height: 5.5vw;
+  position: fixed;
+  box-shadow:
+    0 0 0 0.4vw black;
+  border-radius: 0.6vw;
+  background-color: #272727;
+}
+
+.fieldborder{
+  top: 14.95vw;
+  left: 39vw;
+  width: 17vw;
+  position: fixed;
+  border-color: black;
+  border-style: ridge;
+  border-width: 0.5vw;
+  border-radius: 1vw;
+  box-shadow:
+    0 0 0 1.73vw #F5F1F2,
+    0 0 0 2.4vw #6E6E6E;
+}

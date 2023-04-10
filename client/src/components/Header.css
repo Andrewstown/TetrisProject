@@ -1,9 +1,9 @@
 #xp{
-  top: 92px;
-  left: 177px;
-  font-size: 26px;
-  border-width: 20px;
-  -webkit-text-stroke: 1.7px black;
+  top: 5.29vw;
+  left: 9.25vw;
+  font-size: 1.23vw;
+  border-width: 1.3vw;
+  -webkit-text-stroke: 0.1vw black;
 }
 
 .nav{
@@ -11,9 +11,9 @@
 }
 
 .coin{
-  top: 79px;
-  left: 190px;
-  width: 45px;
+  top: 4.5vw;
+  left: 10vw;
+  width: 2.3vw;
   z-index: 3;
   position: fixed;
 }
@@ -25,7 +25,7 @@
   font-family: block;
   border-color: #1685d2;
   border-style: ridge;
-  border-width: 20px;
+  border-width: 1.3vw;
   -webkit-text-stroke: 1.7px black;
 }
 
@@ -46,17 +46,17 @@
 }
 
 .logo{
-  top: 37px;
+  top: 2vw;
   right: 2.5%;
-  width: 135px;
+  width: 8vw;
   position: fixed;
 }
 
 #name{
-  top: -41px;
-  left: 177px;
-  font-size: 40px;
-  -webkit-text-stroke: 3px black;
+  top: -2.1vw;
+  left: 9.25vw;
+  font-size: 2.1vw;
+  -webkit-text-stroke: 0.15vw black;
 }
 
 .text{
@@ -65,49 +65,49 @@
   position: fixed;
   border-color: #1685d2;
   border-style: ridge;
-  border-width: 20px;
+  border-width: 1.3vw;
 }
 
 #coins{
-  top: 39px;
-  left: 177px;
-  font-size: 27px;
-  -webkit-text-stroke: 1.7px black;
+  top: 2.5vw;
+  left: 9.25vw;
+  font-size: 1.3vw;
+  -webkit-text-stroke: 0.1vw black;
 }
 
 #level{
-  top: 92px;
-  left: 379px;
-  font-size: 26px;
+  top: 5.29vw;
+  left: 20vw;
   z-index: 2;
-  -webkit-text-stroke: 1.7px black;
+  font-size: 1.23vw;
+  border-width: 1.3vw;
+  -webkit-text-stroke: 0.1vw black;
 }
 
 .avatar{
   top: 0px;
   left: 0px;
-  width: 148px;
+  width: 8vw;
   z-index: 1;
   position: fixed;
   border-color: #1685d2;
   border-style: ridge;
-  border-width: 20px;
+  border-width: 1.3vw;
 }
 
 #xp-bar{
-  top: 138px;
-  left: 260px;
-  width: 119px;
-  height: 30px;
+  top: 7.8vw;
+  left: 13.8vw;
+  width: 6.2vw;
+  height: 1.5vw;
   position: fixed;
-  font-size: 27px;
   background-color: #b1daf7;
 }
 
 .backdrop{
   top: 0vw;
   left: 0vw;
-  width: 97.7vw;
+  width: 97.5vw;
   height: 8vw;
   z-index: 0;
   position: fixed;

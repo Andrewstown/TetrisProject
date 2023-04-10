@@ -2,7 +2,7 @@ import React, {useEffect, useState, createContext} from 'react'
 import {Route, Switch, useHistory} from 'react-router-dom'
 
 import Header from './Header'
-import Component1 from './Component1'
+import Game from './Game'
 
 import './App.css'
 
@@ -33,7 +33,7 @@ export default function App(){
           <Route exact path="/">
           </Route>
         </Switch>
-        <Component1/>
+        <Game/>
       </AvatarsContext.Provider>
     </UserContext.Provider>
   </div>)
