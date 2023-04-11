@@ -6,5 +6,6 @@ export default class Tetrimino{
         this.leftMost = []
         this.rightMost = []
         this.bottomMost = []
+        this.rotate = () => {}
     }
 }
