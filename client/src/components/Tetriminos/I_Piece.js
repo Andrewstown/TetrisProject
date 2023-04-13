@@ -4,6 +4,7 @@ export default class I_Piece extends Tetrimino{
 
     constructor(){
         super()
+        this.look = [[1, 1, 1, 1]]
         this.color = 5
         this.rotate = rotateNum => {
             switch(rotateNum){
@@ -26,7 +27,7 @@ export default class I_Piece extends Tetrimino{
                     this.bottomMost = [[0, 2], [1, 2], [2, 2], [3, 2]]
                     break;
                 case 3:
-                    this.body = [[0, 1, 0, 0], [1, 1, 1, 1], [0, 0, 0, 0], [0, 0, 0, 0,]]
+                    this.body = [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0,]]
                     this.leftMost = [[1, 0], [1, 1], [1, 2], [1, 3]]
                     this.rightMost = [[1, 0], [1, 1], [1, 2], [1, 3]]
                     this.bottomMost = [[1, 3]]

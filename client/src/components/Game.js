@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useContext} from 'react'
 
 import Block from './Block.js'
+import HoldBlock from './HoldBlock.js'
 import I_Piece from './Tetriminos/I_Piece.js'
 import J_Piece from './Tetriminos/J_Piece.js'
 import L_Piece from './Tetriminos/L_Piece.js'
@@ -20,33 +21,38 @@ const O = new O_Piece()
 const S = new S_Piece()
 const T = new T_Piece()
 const Z = new Z_Piece()
+const pile = [I, J, L, O, S, T, Z]
 
+let add = false
 let bag = []
 let drop = false
 let held = false
 let next = []
-let pile = [I, J, L, O, S, T, Z]
-let tick = 1000
-let time = 0
+let tick = 0
 let board = [[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}]]
+let level = 1
 let spawn = false
-let timeout = null
+let points = 0
+let xGhost = 0
+let yGhost = 0
 let gameover = false
 let justHeld = false
 let rotation = 0
+let timeTick = null
+let timeDrop = null
 let xCurrent = 0
 let yCurrent = 0
-let scoreMulti = 1.00
+let holdPiece = null
 let currentPiece = null
 let tempRotation = 0
+let holdfornow = [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]]
 
 export default function Game(){
-    const [hold, setHold] = useState(null)
-    const [timeS, setTimeS] = useState(0)
-    const [color, setColor] = useState(1)
-    const [score, setScore] = useState(-10)
+    const [tickS, setTickS] = useState(0)
+    const [score, setScore] = useState(0)
     const [blocks, setBlocks] = useState({})
     const [sprite, setSprite] = useState(null)
+    const [holdPieceS, setHoldPieceS] = useState([])
 
     const user = useContext(UserContext)
 
@@ -59,20 +65,78 @@ export default function Game(){
 
 
     useEffect(() => {
-        timeout = setTimeout(() => {
-            time++
-            setTimeS(time / 60)
-        }, tick / 60)
-    }, [timeS])
+        timeTick = setTimeout(() => {
+            tick++
+            setTickS(tick / 60)
+        }, 1000 / 60)
+    }, [tickS])
     
     //GAME SETUP
     useEffect(() => {
         document.addEventListener("keydown", e => {
-            if (e.repeat) return
-            removePiece(0, 1)
+            if (e.repeat && (e.key != 'ArrowDown' && e.key != 'ArrowLeft' && e.key != 'ArrowRight') || gameover == true) return
+            switch(e.key){
+                case 'ArrowUp':
+                    calcRotation(1)
+                    break
+                case 'ArrowDown':
+                    window.clearTimeout(timeDrop)
+                    runDropTime()
+                    if (calcCollision(1, 2) < 1 && spawn == false){
+                        writePiece(currentPiece.color, true)
+                        lineCheck()
+                    }else{
+                        add = true
+                        removePiece(0, 1)
+                    }
+                    break
+                case 'ArrowLeft':
+                    removePiece(calcCollision(1, 1), 0)
+                    break
+                case 'ArrowRight':
+                    removePiece(calcCollision(1, 3), 0)
+                    break
+                case ' ':
+                    add = true
+                    drop = true
+                    removePiece(0, calcCollision(20, 2))
+                    break
+                case 'c':
+                    if (!held) {hold()}
+                    break
+                case 'Shift':
+                    if (!held) {hold()}
+                    break
+            }
         })
         gameSetup()
     }, [])
+
+    const hold = () => {
+        held = true;
+        removeGhost();
+        if (holdPiece == null){
+            justHeld = true
+            holdPiece = currentPiece
+            setHoldPieceS([currentPiece.look, currentPiece.color])
+            writePiece(0, false)
+            spawnPiece()
+        }
+        else{
+            writePiece(0, false)
+            let temphold = holdPiece
+            holdPiece = currentPiece
+            setHoldPieceS([currentPiece.look, currentPiece.color])
+            xCurrent = 3
+            yCurrent = 0
+            currentPiece = temphold
+            rotation = 0
+            tempRotation = 0
+            window.clearTimeout(timeDrop)
+            addPiece(0, 0)
+            runDropTime()
+        }
+    }
 
     const addNext = () => {
         if (bag.length == 0){
@@ -84,6 +148,18 @@ export default function Game(){
         
     }
 
+    const addGhost = () => {
+        xGhost = xCurrent
+        yGhost = calcCollision(20, 2) + yCurrent
+        for (let y = 0; y < 4; y++){
+            for (let x = 0; x < 4; x++){
+                if (currentPiece.body[y][x] == 1 && board[x + xGhost][y + yGhost].color == 0){
+                    board[x + xGhost][y + yGhost].color = 9
+                }
+            }
+        }
+    }
+
     const addPiece = (x, y) => {
         currentPiece.rotate(tempRotation)
         rotation = tempRotation
@@ -91,20 +167,16 @@ export default function Game(){
         if (drop){
             drop = false
             yCurrent += y
-            writePiece(currentPiece.color)//THIS IS MEANT FOR WHEN THE BLOCK IS DONE, SET A VALUE FOR THAT!
-            lineCheck()
-        }
-        else if (calcCollision(1, 2) < 1 && spawn == false){
-            writePiece(currentPiece.color)//THIS IS MEANT FOR WHEN THE BLOCK IS DONE, SET A VALUE FOR THAT!
+            writePiece(currentPiece.color, true)
             lineCheck()
         }
         else{
             spawn = false
             yCurrent += y
-            writePiece(currentPiece.color)
+            writePiece(currentPiece.color, false)
             if (!user || user.ghost == true)
             {
-                //AddGhost()
+                addGhost()
             }
             setBlocks(board)
         }
@@ -125,7 +197,7 @@ export default function Game(){
 
     const lineCheck = () => {
         let count = 0
-        for (let y = 0; y < 20; y++){
+        for (let y = 0; y < 21; y++){
             count = 0
             for (let x = 0; x < 10; x++){
                 if (board[x][y].color != 0){
@@ -135,41 +207,33 @@ export default function Game(){
             if (count == 10){
                 for (let t = y; t > 1; t--){
                     for (let a = 0; a < 10; a++){
-                        board[a, t].color = board[a, t-1].color
+                        board[a][t].color = board[a][t-1].color
+                        board[a][t].stop = false
                     }
                 }
-                setScore(score + (100 * scoreMulti))
-                scoreMulti += 0.01
+                points += 100
+                setScore(points)
             }
         }
+        window.clearTimeout(timeDrop)
         spawnPiece()
-    }
-
-    const writePiece = color => {
-        for (let y = 0; y < 4; y++){
-            for (let x = 0; x < 4; x++){
-                if (currentPiece.body[y][x] == 1){
-                    board[x + xCurrent][y + yCurrent].color = color
-                }
-            }
-        }
-        setBlocks(board)
+        runDropTime()
     }
 
     const gameSetup = () => {
         bag = [...pile]
         held = false
         next = []
-        setHold(null)
+        setHoldPieceS(null)
         gameover = false
-        setScore(-10)
-        scoreMulti = 1.00
+        setScore(0)
+        points = 0
         for (let i = 0; i < 5; i++){
             addNext()
         }
         for(let x = 0; x < 10; x++){
             for(let y = 0; y < 21; y++){
-                board[x][y] = {x: 741 + (32 * x), y: 257 + (32 * y), color: 0}
+                board[x][y] = {x: 741 + (32 * x), y: 257 + (32 * y), color: 0, stop: false}
             }
         }
         setBlocks(board)
@@ -178,10 +242,10 @@ export default function Game(){
 
     const gameStart = () => {
         spawnPiece()
+        runDropTime()
     }
 
     const spawnPiece = () => {
-        setScore(score + (10 * scoreMulti))
         currentPiece = next[0]
         currentPiece.rotate(0)
         rotation = 0
@@ -191,41 +255,108 @@ export default function Game(){
         xCurrent = 3
         yCurrent = 0
         if (canSpawn()){
-                spawn = true
-                if (justHeld == false){
-                    held = false
-                }
-                else{
-                    justHeld = false
-                }
-                addPiece(0, 0)
+            spawn = true
+            if (justHeld == false){
+                held = false
             }
-            else
-            {
-                gameover = true
-                for (let y = 0; y < 4; y++){
-                    for (let x = 0; x < 4; x++){
-                        if (currentPiece.body[y][x] == 1){
-                            if (board[x + xCurrent][y + yCurrent].color == 0){
-                                board[x + xCurrent][y + yCurrent].color = currentPiece.color
-                            }
-                            else{
-                                board[x + xCurrent][y + yCurrent].color = 8
-                            }
+            else{
+                justHeld = false
+            }
+            addPiece(0, 0)
+        }
+        else
+        {
+            gameover = true
+            for (let y = 0; y < 4; y++){
+                for (let x = 0; x < 4; x++){
+                    if (currentPiece.body[y][x] == 1){
+                        if (board[x + xCurrent][y + yCurrent].color == 0){
+                            board[x + xCurrent][y + yCurrent].color = currentPiece.color
+                        }
+                        else{
+                            board[x + xCurrent][y + yCurrent].color = 8
                         }
                     }
                 }
-                setBlocks(board)
+            }
+            setBlocks(board)
+            window.clearTimeout(timeDrop)
+        }
+    }
+
+    const runDropTime = () => {
+        timeDrop = setTimeout(() => {
+            if (!gameover){
+                if (calcCollision(1, 2) < 1 && spawn == false){
+                    writePiece(currentPiece.color, true)
+                    lineCheck()
+                }else{
+                    removePiece(0, 1)
+                }
+                runDropTime()
+            }
+        }, 1000)
+    }
+
+    const writePiece = (color, stop) => {
+        for (let y = 0; y < 4; y++){
+            for (let x = 0; x < 4; x++){
+                if (currentPiece.body[y][x] == 1){
+                    board[x + xCurrent][y + yCurrent].color = color
+                    if (stop){board[x + xCurrent][y + yCurrent].stop = true}
+                }
+            }
+        }
+        setBlocks(board)
+    }
+
+    const removeGhost = () => {
+        for (let y = 0; y < 4; y++){
+                for (let x = 0; x < 4; x++){
+                    if (currentPiece.body[y][x] == 1){
+                        board[x + xGhost][y + yGhost].color = 0
+                    }
+                }
             }
     }
 
     const removePiece = (x, y) => {
-        writePiece(0)
+        console.log(add)
+        if (add){
+            points += y * (drop ? 2 : 1)
+            setScore(points)
+            add = false
+        } 
+        console.log(points)
+        writePiece(0, false)
         if (!user || user.ghost == true)
         {
-            //removeGhost()
+            removeGhost()
         }
         addPiece(x, y)
+    }
+
+    const calcRotation = rotate => {
+        tempRotation = (((rotation + rotate) < 4 && (rotation + rotate) > -1) ? rotation + rotate : ((rotation + rotate) > 3 ? 0 : 3))
+        currentPiece.rotate(tempRotation)
+        for (let y = 0; y < 4; y++){
+            for (let x = 0; x < 4; x++){
+                if (currentPiece.body[y][x] == 1){
+                    if ((!(x + xCurrent < 0 || x + xCurrent > 9) && !(y + yCurrent < 0 || y + yCurrent > 20))){
+                        let pos = board[x + xCurrent][y + yCurrent]
+                        if (pos.stop == true && (pos.color != 0 || pos.color > 7)){
+                            tempRotation = rotation
+                        }
+                    }
+                    else{
+                        tempRotation = rotation
+                    }
+                }
+            }
+                
+        }
+        currentPiece.rotate(rotation)
+        removePiece(0, 0)
     }
 
     const calcCollision = (distance, direction) => { // 1 = left, 2 = down, 3 = right
@@ -233,7 +364,7 @@ export default function Game(){
             case 1:
                 for (let i = 1; i <= distance; i++){
                     currentPiece.leftMost.forEach(spot => {
-                        if ((xCurrent + spot[0] - i) < 0 || (board[xCurrent + spot[0] - i][yCurrent + spot[1]].color > 0 && board[xCurrent + spot[1] - i][yCurrent + spot[1]].color > 0)){
+                        if ((xCurrent + spot[0] - i) < 0 || (board[xCurrent + spot[0] - i][yCurrent + spot[1]].color > 0 && board[xCurrent + spot[0] - i][yCurrent + spot[1]].color < 9)){
                             distance = -(i - 1)
                         }
                     })
@@ -242,7 +373,8 @@ export default function Game(){
             case 2:
                 for (let i = 1; i <= distance; i++){
                     currentPiece.bottomMost.forEach(spot => {
-                        if ((yCurrent + spot[1] + i) > 20 || (board[xCurrent + spot[0]][yCurrent + spot[1] + i].color > 0 && board[xCurrent + spot[0]][yCurrent + spot[1] + i].color > 0)){
+                        let pos = board[xCurrent + spot[0]][yCurrent + spot[1] + i]
+                        if ((yCurrent + spot[1] + i) > 20 || (pos.color > 0 && pos.color < 9)){
                             distance = i - 1
                         }
                     })
@@ -251,7 +383,7 @@ export default function Game(){
             case 3:
                 for (let i = 1; i <= distance; i++){
                     currentPiece.rightMost.forEach(spot => {
-                        if ((xCurrent + spot[0] + i) > 9 || (board[xCurrent + spot[2] + i][yCurrent + spot[1]].color > 0 && board[xCurrent + spot[0]][yCurrent + spot[1] + i].color > 0)){
+                        if ((xCurrent + spot[0] + i) > 9 || (board[xCurrent + spot[0] + i][yCurrent + spot[1]].color > 0 && board[xCurrent + spot[0] + i][yCurrent + spot[1]].color < 9)){
                             distance = i - 1
                         }
                     })
@@ -272,7 +404,8 @@ export default function Game(){
         <div className='border'>
             <div className='blockcell'></div>
             <p className='outtext'>hold</p>
-            <p className='intext'>hold</p>
+            <p className='intext'>hold</p>  
+            {holdPieceS ? <p>asd</p> : null}
         </div>
         <div className='border' id='next'>
             <div className='blockcell' id='cell1'></div>
@@ -293,7 +426,6 @@ export default function Game(){
                     })
                 )
             })}
-            <p>{time}</p>
         </div> : null}
      </>)
 }

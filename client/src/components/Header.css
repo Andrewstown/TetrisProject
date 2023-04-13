@@ -1,7 +1,7 @@
 #xp{
   top: 5.35vw;
   left: 9.25vw;
-  font-size: 1.23vw;
+  font-size: 1.22vw;
   border-width: 1.3vw;
   -webkit-text-stroke: 0.1vw black;
 }
@@ -79,7 +79,7 @@
   top: 5.35vw;
   left: 20vw;
   z-index: 2;
-  font-size: 1.23vw;
+  font-size: 1.22vw;
   border-width: 1.3vw;
   -webkit-text-stroke: 0.1vw black;
 }

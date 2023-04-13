@@ -4,6 +4,7 @@ export default class O_Piece extends Tetrimino{
 
     constructor(){
         super()
+        this.look = [[1, 1], [1, 1]]
         this.color = 3
         this.rotate = rotateNum => {
             switch(rotateNum){
