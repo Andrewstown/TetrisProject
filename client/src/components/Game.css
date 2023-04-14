@@ -30,21 +30,21 @@
 
 #cell3{
   top: 30.5vw;
-  left: 59.5vw;
+  left: 59.6vw;
   width: 4.5vw;
   height: 4.5vw;
 }
 
 #cell4{
   top: 36vw;
-  left: 59.5vw;
+  left: 59.6vw;
   width: 4.5vw;
   height: 4.5vw;
 }
 
 #cell5{
   top: 41.5vw;
-  left: 59.5vw;
+  left: 59.6vw;
   width: 4.5vw;
   height: 4.5vw;
 }
@@ -55,6 +55,29 @@
   width: 17vw;
   z-index: 1;
   position: fixed;
+}
+
+.pause{
+  top: 10.5vw;
+  left: 0%;
+  right: 0%;
+  bottom: 0%;
+  opacity: 0.4;
+  z-index: 6;
+  position: fixed;
+  background-color: #272727;
+}
+
+.paused{
+  top: 12vw;
+  left: 36vw;
+  color: yellow;
+  opacity: 1;
+  z-index: 7;
+  position: fixed;
+  font-size: 6vw;
+  font-family: block;
+  -webkit-text-stroke: 0.3vw black;
 }
 
 #score{
@@ -126,13 +149,25 @@
   background-color: #272727;
 }
 
+#countdown{
+  top: 27vw;
+  left: 43.5vw;
+  width: 9vw;
+  height: 4vw;
+  display: flex;
+  z-index: 5;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
+}
+
 .fieldborder{
   top: 14.95vw;
   left: 39vw;
   width: 17vw;
   position: fixed;
   border-color: black;
-  border-style: ridge;
+  border-style: solid;
   border-width: 0.5vw;
   border-radius: 1vw;
   box-shadow:
