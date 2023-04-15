@@ -22,25 +22,36 @@ const T = new T_Piece()
 const Z = new Z_Piece()
 const pile = [I, J, L, O, S, T, Z]
 const music = new Audio('/sounds/marathon.mp3')
+music.volume = 0.7
 
 let add = false
 let bag = []
 let drop = false
 let held = false
 let next = []
+let play = false
+let stop = false
 let tick = 0
 let time = 0
 let board = [[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}]]
 let combo = 0
+let ghost = true
 let level = 1
+let voice = true
+let sound = true
 let spawn = false
 let paused = false
+let player = true
 let points = 0
 let xGhost = 0
 let yGhost = 0
 let gravity = 1000
 let dropTime = 0
 let gameover = false
+let holdChar = ''
+let holdTime = null
+let lineText = ''
+let lineTime = null
 let justHeld = false
 let rotation = 0
 let timeDrop = null
@@ -66,8 +77,11 @@ export default function Game(){
     //colors: Z-1, L-2, O-3, S-4, I-5, J-6, T-7, ghost-9
 
     useEffect(() => {
-        if (user)
+        if (user){
             setSprite(user.sprite)
+        }else{
+            setSprite('/sprites/original.png')
+        }
     }, [user])
 
 
@@ -88,7 +102,7 @@ export default function Game(){
     //GAME SETUP
     useEffect(() => {
         document.addEventListener("keydown", e => {
-            if (e.repeat && (e.key != 'ArrowDown' && e.key != 'ArrowLeft' && e.key != 'ArrowRight') || gameover == true || countdown > -1 || (paused && e.key != 'Escape')) return
+            if (e.repeat && (e.key != 'ArrowDown' && e.key != 'ArrowLeft' && e.key != 'ArrowRight') || gameover == true || countdown > -1 || (paused && e.key != 'Escape') || stop == true) return
             switch(e.key){
                 case 'ArrowUp':
                     calcRotation(1)
@@ -98,7 +112,7 @@ export default function Game(){
                         add = true
                         dropTime = 0
                         window.clearTimeout(timeDrop)
-                        playSound('softdrop')
+                        playSound('ssoftdrop')
                         runDropTime()
                         removePiece(0, 1)
                     }
@@ -116,13 +130,13 @@ export default function Game(){
                     window.clearTimeout(timeDrop)
                     runDropTime()
                     removePiece(0, calcCollision(20, 2))
-                    playSound('harddrop')
+                    playSound('sharddrop')
                     break
                 case 'c':
-                    if (!held) {hold()} else {playSound('holdfail')}
+                    hold3()
                     break
                 case 'Shift':
-                    if (!held) {hold()} else {playSound('holdfail')}
+                    hold3()
                     break
                 case 'Escape':
                     pause()
@@ -138,20 +152,19 @@ export default function Game(){
                     break
             }
         })
-        gameSetup()
     }, [])
 
     const hold = () => {
         held = true
         removeGhost()
-        playSound('hold')
+        playSound('shold')
         if (holdPiece == null){
             justHeld = true
             hold2()
-            writePiece(0, false)
+            writePiece(-1, false)
             spawnPiece()
         }else{
-            writePiece(0, false)
+            writePiece(-1, false)
             let temphold = holdPiece
             hold2()
             xCurrent = 3
@@ -169,16 +182,16 @@ export default function Game(){
     const count = () => {
         switch(countdown){
             case 0:
-                playSound('go')
+                playSound('sgo')
                 break
             case 1:
-                playSound('count')
+                playSound('scount')
                 break
             case 2:
-                playSound('count', 1.2)
+                playSound('scount', 1.2)
                 break
             case 3:
-                playSound('count', 1.4)
+                playSound('scount', 1.4)
                 break
         }
         setTimeout(() => {
@@ -187,8 +200,11 @@ export default function Game(){
                 count()
             }else{
                 gameStart()
+                window.addEventListener("beforeunload", e => {
+                    e.returnValue = "This isn't supported anymore :("
+                })
             }
-        }, 850)
+        }, 750)
     }
 
     const hold2 = () => {
@@ -205,13 +221,27 @@ export default function Game(){
         }
     }
 
+    const hold3 = () => {
+        window.clearTimeout(holdTime)
+        holdTime = setTimeout(() => {
+            holdChar = ''
+        }, 550)
+        if (!held) {
+            holdChar = '✔'
+            hold()
+        }else{
+            holdChar = 'X'
+            playSound('sholdfail')
+        }
+    }
+
     const pause = () => {
         paused = !paused
         if (paused){
             window.clearTimeout(timeDrop)
-            music.pause()
+            if (player) music.pause()
         }else{
-            music.play()
+            if (player) music.play()
             runDropTime(1000 - (1000 * (dropTime / 60)))
         }
     }
@@ -225,12 +255,18 @@ export default function Game(){
         bag.splice(temp, 1)
     }
 
+    const hitPlay = () => {
+        play = true
+        paused = false
+        gameSetup()
+    }
+
     const addGhost = () => {
         xGhost = xCurrent
         yGhost = calcCollision(20, 2) + yCurrent
         for (let y = 0; y < 4; y++){
             for (let x = 0; x < 4; x++){
-                if (currentPiece.body[y][x] == 1 && board[x + xGhost][y + yGhost].color == 0){
+                if (currentPiece.body[y][x] == 1 && board[x + xGhost][y + yGhost].color == -1){
                     board[x + xGhost][y + yGhost].color = 9
                 }
             }
@@ -250,7 +286,7 @@ export default function Game(){
             spawn = false
             yCurrent += y
             writePiece(currentPiece.color, false)
-            if (!user || user.ghost == true)
+            if (ghost)
             {
                 addGhost()
             }
@@ -316,45 +352,83 @@ export default function Game(){
         for (let y = 0; y < 21; y++){
             count = 0
             for (let x = 0; x < 10; x++){
-                if (board[x][y].color != 0){
+                if (board[x][y].color != -1){
+                    
                     count++
                 }
             }
             if (count == 10){
-                for (let t = y; t > 1; t--){
-                    for (let a = 0; a < 10; a++){
-                        board[a][t].color = board[a][t-1].color
-                        board[a][t].stop = false
-                    }
+                for (let a = 0; a < 10; a++){
+                    board[a][y].color = 0
                 }
                 lines++
             }
         }
-        if (lines > 0){
-            points += combo * 50 * level
-            if (combo > 0){
-                if (combo > 6){
-                    playSound('combo7+')
-                }else{
-                    playSound(`combo${combo}`)
+        if (lines > 0){stop = true}
+        setTimeout(() => {
+            for (let y = 0; y < 21; y++){
+                count = 0
+                for (let x = 0; x < 10; x++){
+                    if (board[x][y].color == 0){
+                        count++
+                    }
+                }
+                if (count == 10){
+                    for (let t = y; t > 1; t--){
+                        for (let a = 0; a < 10; a++){
+                            board[a][t].color = board[a][t-1].color
+                            board[a][t].stop = false
+                        }
+                    }
                 }
             }
-            combo++
-            if (lines > 1){
-                if (lastTetris && lines == 4){
-                    playSound('back2back')
-                }else{
-                    playSound(`${lines}v`)
-                    lastTetris = (lines == 4)
+            if (lines > 0){
+                points += combo * 50 * level
+                if (combo > 0){
+                    if (combo > 6){
+                        playSound('scombo7+')
+                    }else{
+                        playSound(`scombo${combo}`)
+                    }
                 }
+                switch(lines){
+                    case 1:
+                        lineText = 'Single'
+                        break
+                    case 2:
+                        lineText = 'Double'
+                        break
+                    case 3:
+                        lineText = 'Triple'
+                        break
+                    case 4:
+                        lineText = 'Tetris'
+                        break
+                }
+                combo++
+                if (lines > 1){
+                    if (lastTetris && lines == 4){
+                        playSound('vback2back')
+                    }else{
+                        playSound(`v${lines}v`)
+                        lastTetris = (lines == 4)
+                    }
+                }
+                points += 200 * lines - (lines == 4 ? 0 : 100)
+                setScore(points)
+                playSound(`serase${lines}`)
+                window.clearTimeout(timeDrop)
+                runDropTime()
+                window.clearTimeout(lineTime)
+                lineTime = setTimeout(() => {
+                    lineText = ''
+                }, 800)
+            }else{
+                combo = 0
             }
-            points += 200 * lines - (lines == 4 ? 0 : 100)
-            setScore(points)
-            playSound(`erase${lines}`)
-        }else{
-            combo = 0
-        }
-        spawnPiece()
+            stop = false
+            spawnPiece()
+        }, (lines > 0 ? 200 : 1))
     }
 
     const gameSetup = () => {
@@ -371,7 +445,7 @@ export default function Game(){
         }
         for(let x = 0; x < 10; x++){
             for(let y = 0; y < 21; y++){
-                board[x][y] = {x: 741 + (32 * x), y: 257 + (32 * y), color: 0, stop: false}
+                board[x][y] = {x: 741 + (32 * x), y: 257 + (32 * y), color: -1, stop: false}
             }
         }
         showNext()
@@ -380,17 +454,21 @@ export default function Game(){
     }
 
     const gameStart = () => {
+        music.currentTime = 0
         music.play()
         music.loop = true
         spawnPiece()
         runDropTime()
     }
 
-    const playSound = (sound, rate = 1) => {
-        const noise = new Audio(`/sounds/${sound}.wav`)
-        noise.preservesPitch = false
-        noise.playbackRate = rate
-        noise.play()
+    const playSound = (soundr, rate = 1) => {
+        if ((soundr[0] == 's' && sound) || (soundr[0] == 'v' && voice)){
+            const noise = new Audio(`/sounds/${soundr}.wav`)
+            noise.volume = 0.6
+            noise.preservesPitch = false
+            noise.playbackRate = rate
+            noise.play()
+        }
     }
 
     const spawnPiece = () => {
@@ -416,7 +494,7 @@ export default function Game(){
             for (let y = 0; y < 4; y++){
                 for (let x = 0; x < 4; x++){
                     if (currentPiece.body[y][x] == 1){
-                        if (board[x + xCurrent][y + yCurrent].color == 0){
+                        if (board[x + xCurrent][y + yCurrent].color == -1){
                             board[x + xCurrent][y + yCurrent].color = currentPiece.color
                         }else{
                             board[x + xCurrent][y + yCurrent].color = 8
@@ -431,11 +509,11 @@ export default function Game(){
 
     const runDropTime = (timer = gravity) => {
         timeDrop = setTimeout(() => {
-            if (!gameover){
+            if (!gameover && ! stop){
                 if (calcCollision(1, 2) < 1 && spawn == false){
                     writePiece(currentPiece.color, true)
                     lineCheck()
-                    playSound('place')
+                    playSound('splace')
                 }else{
                     removePiece(0, 1)
                 }
@@ -465,7 +543,7 @@ export default function Game(){
         for (let y = 0; y < 4; y++){
             for (let x = 0; x < 4; x++){
                 if (currentPiece.body[y][x] == 1){
-                    board[x + xGhost][y + yGhost].color = 0
+                    board[x + xGhost][y + yGhost].color = -1
                 }
             }
         }
@@ -477,8 +555,8 @@ export default function Game(){
             setScore(points)
             add = false
         }
-        writePiece(0, false)
-        if (!user || user.ghost == true)
+        writePiece(-1, false)
+        if (ghost)
         {
             removeGhost()
         }
@@ -505,9 +583,9 @@ export default function Game(){
                     
             }
             if (tempRotation == rotation){
-                playSound('rotfail')
+                playSound('srotfail')
             }else{
-                playSound('rotate')
+                playSound('srotate')
             }
             currentPiece.rotate(rotation)
         }
@@ -525,9 +603,9 @@ export default function Game(){
                     })
                 }
                 if (distance == 0){
-                    playSound('movefail')
+                    playSound('smovefail')
                 }else{
-                    playSound('move')
+                    playSound('smove')
                 }
                 return -distance
             case 2:
@@ -549,14 +627,41 @@ export default function Game(){
                     })
                 }
                 if (distance == 0){
-                    playSound('movefail')
+                    playSound('smovefail')
                 }else{
-                    playSound('move')
+                    playSound('smove')
                 }
                 return distance
             default:
                 return 0
         }
+    }
+
+    const toggleGhost = () => {
+        ghost = !ghost
+        if (ghost){
+            addGhost()
+        }else{
+            removeGhost()
+        }
+        playSound('schoose')
+    }
+    const toggleSound = () => {
+        sound = !sound
+        playSound('schoose')
+    }
+    const toggleMusic = () => {
+        player = !player
+        if (player && !paused){
+            music.play()
+        }else{
+            music.pause()
+        }
+        playSound('schoose')
+    }
+    const toggleVoice = () => {
+        voice = !voice
+        playSound('schoose')
     }
 
     return(<>
@@ -569,8 +674,21 @@ export default function Game(){
         <div className='border'>
             <div className='blockcell'></div>
             <p className='outtext'>hold</p>
-            <p className='intext'>hold</p>  
-            {holdPieceS ? <p>asd</p> : null}
+            <p className='intext'>hold</p>
+            {holdChar.length > 0 ? <>
+                <div style={{top: '18vw', left: '31.5vw', width: '5.5vw', height: '5.5vw', zIndex: '2', position: 'fixed', boxShadow: `0 0 0 0.8vw #${holdChar === '✔' ? '00FF00' : 'FF0000'}`, borderRadius: '0.6vw', backgroundColor: '#F5F1F2'}}/>
+                <p style={{top: '17vw', left: '36vw', color: `#${holdChar === '✔' ? '00FF00' : 'FF0000'}`, zIndex: '4', position: 'fixed', animation: 'hold 0.6s ease', fontSize: '4vw', fontFamily: 'block', WebkitTextStroke: `0.27vw #${holdChar === '✔' ? '006600' : '510000'}`}}>{holdChar}</p>
+            </>: null}
+            {lineText.length > 0 ? <>
+                <p className='linesout'>{lineText}</p>
+                <p className='linesin'>{lineText}</p>
+                {combo > 1 ? <>
+                    <p className='combo1'>Combo</p>
+                    <p className='combo2'>Combo</p>
+                    <p className='combo3'>{combo-1}</p>
+                    <p className='combo4'>{combo-1}</p>
+                </> : null}
+            </> : null}
         </div>
         <div className='border' id='next'>
             <div className='blockcell' id='cell1'></div>
@@ -581,23 +699,34 @@ export default function Game(){
             <p className='outtext' id='nexttext'>next</p>
             <p className='intext' id='nexttext'>next</p>
         </div>
-        <div id='countdown'>
-            {countdown > -1 && countdown < 4 ? <p style={{top: '23vw', left: '42vw', color: `${countdown == 0 ? '#19e637' : '#F5F1F2'}`, fontSize: '7.5vw', fontFamily: 'block', WebkitTextStroke: '0.3vw black'}}>{countdown == 0 ? 'GO!' : countdown}</p> : null}
-        </div>
-        {paused ? <>
-            <div className='pause'/>
-            <p className='paused'>Paused</p>
+        {lineText.length > 0 && combo > 1 ? <>
         </> : null}
-        {blocks.length > 0 && sprite && countdown < 0 ? <div>
-            {blocks.map(row => {
-                return(row.map(spot => {if (spot.y > 288 && spot.color > 0){return(<Block x={spot.x} y={spot.y} sprite={sprite} color={spot.color}/>)}}))
-            })}
-            {holdBlock.length > 0 ? holdBlock.map(spot => {
-                return(<Block x={spot.x} y={spot.y} sprite={sprite} color={spot.color} size={spot.size}/>)
-            }) : null}
-            {nextpieces[0].length > 0 ? nextpieces.map(next => {
-                return(next.map(spot => {return(<Block x={spot.x} y={spot.y} sprite={sprite} color={spot.color} size={spot.size}/>)}))
-            }) : null}
-        </div> : null}
-     </>)
+        {play ? <><div id='countdown'>
+            {countdown > -1 && countdown < 4 ? <p style={{top: '23vw', left: '42vw', color: `${countdown == 0 ? '#19e637' : '#F5F1F2'}`, fontSize: '7.5vw', fontFamily: 'block', WebkitTextStroke: '0.3vw black'}}>{countdown == 0 ? 'GO!' : countdown}</p> : null}
+            </div>
+            {paused ? <>
+                <div className='pause'/>
+                <p className='paused'>Paused</p>
+                <img id='control' src={'/controls.png'}/>
+                <button className='play' id='restart' onClick={hitPlay}>restart</button>
+                <button id='ghost' style={{top: '25vw', left: '32vw', color: `${ghost ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${ghost ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#ghost:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${ghost ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleGhost}>Ghost</button>
+                <button id='sound' style={{top: '28.5vw', left: '32vw', color: `${sound ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${sound ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#sound:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${sound ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleSound}>Sound</button>
+                <button id='music' style={{top: '32vw', left: '32vw', color: `${player ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${player ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#music:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${player ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleMusic}>Music</button>
+                <button id='voice' style={{top: '35.5vw', left: '32vw', color: `${voice ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${voice ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#voice:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${voice ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleVoice}>Voice</button>
+            </> : null}
+            {blocks.length > 0 && sprite && countdown < 0 ? <div>
+                {blocks.map(row => {
+                    return(row.map(spot => {if (spot.y > 288 && spot.color > -1){return(<Block x={spot.x} y={spot.y} sprite={sprite} color={spot.color}/>)}}))
+                })}
+                {holdBlock.length > 0 ? holdBlock.map(spot => {
+                    return(<Block x={spot.x} y={spot.y} sprite={sprite} color={spot.color} size={spot.size}/>)
+                }) : null}
+                {nextpieces[0].length > 0 ? nextpieces.map(next => {
+                    return(next.map(spot => {return(<Block x={spot.x} y={spot.y} sprite={sprite} color={spot.color} size={spot.size}/>)}))
+                }) : null}
+            </div> : null}
+        </> :
+            <button className='play' onClick={hitPlay}>Play</button>
+        }
+    </>)
 }
