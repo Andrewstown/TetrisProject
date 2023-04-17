@@ -28,6 +28,13 @@ if __name__ == '__main__':
         )
         db.session.add(user)
 
+        print('Creating Games...')
+        games = [
+            Game(price = 0, title = 'marathon', description = 'Get your highest score with ramping difficulty!'),
+            Game(price = 1000, title = 'sprint', description = 'Clear 40 lines as fast as possible!'),
+        ]
+        db.session.add_all([game for game in games])
+
         print('Creating Avatars...')
         avatars = [
             Avatar(name = 'guest', image = '/avatars/guest.png', price = 0.0),

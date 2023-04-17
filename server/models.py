@@ -64,7 +64,6 @@ class Game(db.Model, SerializerMixin):
     __tablename__ = 'games'
 
     id = db.Column(db.Integer, primary_key=True)
-    image = db.Column(db.String)
     price = db.Column(db.Float)
     title = db.Column(db.String)
     description = db.Column(db.String)

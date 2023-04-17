@@ -6,9 +6,9 @@
   -webkit-text-stroke: 0.1vw black;
 }
 
-.nav{
+/* .nav{
   
-}
+} */
 
 .coin{
   top: 4.5vw;
@@ -109,7 +109,7 @@
   left: 0vw;
   width: 97.5vw;
   height: 8vw;
-  z-index: 0;
+  z-index: 1;
   position: fixed;
   border-color: #1685d2;
   border-style: ridge;

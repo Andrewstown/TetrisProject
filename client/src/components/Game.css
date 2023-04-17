@@ -8,6 +8,54 @@
   -webkit-text-stroke: 0.2vw black;
 }
 
+.goal1{
+  top: 34vw;
+  left: 30vw;
+  z-index: 5;
+  color: #F5F1F2;
+  position: fixed;
+  font-size: 2.2vw;
+  font-family: block;
+  -webkit-text-stroke: 0.15vw #7C8FAB;
+}
+
+.goal2{
+  top: 34vw;
+  left: 30vw;
+  color: #F5F1F2;
+  position: fixed;
+  font-size: 2.2vw;
+  font-family: block;
+  -webkit-text-stroke: 0.6vw #0F2235;
+}
+
+.goal3{
+  top: 35vw;
+  left: 31vw;
+  z-index: 5;
+  color: #FEFE00;
+  position: fixed;
+  font-size: 4vw;
+  font-family: block;
+  -webkit-text-stroke: 0.2vw #717100;
+}
+
+.goal4{
+  top: 35vw;
+  left: 31vw;
+  color: #FEFE00;
+  position: fixed;
+  font-size: 4vw;
+  font-family: block;
+  -webkit-text-stroke: 0.6vw #0F2235;
+}
+
+#next{
+  left: 59vw;
+  width: 5.5vw;
+  height: 28vw;
+}
+
 .play{
   top: 25vw;
   left: 40.5vw;
@@ -31,12 +79,6 @@
 
 .play:hover{
   border-style: inset;
-}
-
-#next{
-  left: 59vw;
-  width: 5.5vw;
-  height: 28vw;
 }
 
 #cell1{
@@ -72,6 +114,48 @@
   left: 59.6vw;
   width: 4.5vw;
   height: 4.5vw;
+}
+
+#login{
+  top: 36.5vw;
+  left: 43vw;
+  color: #d2d2d2;
+  width: 10vw;
+  cursor: grab;
+  height: 4vw;
+  display: flex;
+  z-index: 5;
+  position: fixed;
+  font-size: 2.5vw;
+  align-items: center;
+  font-family: block;
+  border-color: #a2a2a2;
+  border-style: outset;
+  border-width: 0.5vw;
+  justify-content: center;
+  background-color: #a2a2a2;
+  -webkit-text-stroke: 0.15vw black;
+}
+
+#login:hover{
+  border-style: inset;
+}
+
+.stats{
+  top: 26vw;
+  left: 40vw;
+  width: 16vw;
+  height: 12vw;
+  z-index: 8;
+  position: fixed;
+}
+
+.stats p{
+  z-index: 5;
+  color: #FEFE00;
+  font-size: 1.8vw;
+  font-family: block;
+  -webkit-text-stroke: 0.16vw black;
 }
 
 .combo1{
@@ -120,6 +204,48 @@
   -webkit-text-stroke: 0.6vw black;
 }
 
+.level1{
+  top: 25vw;
+  left: 30vw;
+  z-index: 5;
+  color: #F5F1F2;
+  position: fixed;
+  font-size: 2.2vw;
+  font-family: block;
+  -webkit-text-stroke: 0.15vw #7C8FAB;
+}
+
+.level2{
+  top: 25vw;
+  left: 30vw;
+  color: #F5F1F2;
+  position: fixed;
+  font-size: 2.2vw;
+  font-family: block;
+  -webkit-text-stroke: 0.6vw #0F2235;
+}
+
+.level3{
+  top: 26vw;
+  left: 31vw;
+  z-index: 5;
+  color: #FEFE00;
+  position: fixed;
+  font-size: 4vw;
+  font-family: block;
+  -webkit-text-stroke: 0.2vw #717100;
+}
+
+.level4{
+  top: 26vw;
+  left: 31vw;
+  color: #FEFE00;
+  position: fixed;
+  font-size: 4vw;
+  font-family: block;
+  -webkit-text-stroke: 0.6vw #0F2235;
+}
+
 .field{
   top: 15.4vw;
   left: 39.45vw;
@@ -139,6 +265,19 @@
   background-color: #272727;
 }
 
+.outbar{
+  top: 37vw;
+  left: 37.5vw;
+  width: 0.5vw;
+  height: 12vw;
+  position: fixed;
+  border-color: black;
+  border-style: solid;
+  border-width: 0.4vw;
+  border-radius: 1vw;
+  background-color: #444444;
+}
+
 .paused{
   top: 12vw;
   left: 36vw;
@@ -149,17 +288,6 @@
   font-size: 6vw;
   font-family: block;
   -webkit-text-stroke: 0.3vw black;
-}
-
-#score{
-  top: 11vw;
-  left: 39vw;
-  width: 18vw;
-  height: 4vw;
-  display: flex;
-  position: fixed;
-  align-items: center;
-  justify-content: right;
 }
 
 #score p{
@@ -211,9 +339,32 @@
   -webkit-text-stroke: 0.7vw #6E6E6E;
 }
 
+.gameover{
+  top: 15.4vw;
+  left: 39.45vw;
+  width: 17vw;
+  height: 34.2vw;
+  opacity: 0.4;
+  z-index: 6;
+  position: fixed;
+  background-color: #010808;
+}
+
+.gameoverT{
+  top: 21vw;
+  left: 39.5vw;
+  color: #24db3c;
+  z-index: 7;
+  position: fixed;
+  animation: gameover 0.2s ease;
+  font-size: 2.4vw;
+  font-family: block;
+  -webkit-text-stroke: 0.2vw #13721f;
+}
+
 #restart{
   top: 43vw;
-  left: 41.5vw;
+  left: 41vw;
   width: 14vw;
   height: 4.5vw;
   z-index: 6;
@@ -318,7 +469,7 @@
 @keyframes animline {
   0%{
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(2vw);
   }
   20%{
     opacity: 1;
@@ -338,10 +489,21 @@
   }
 }
 
+@keyframes gameover {
+  0%{
+    opacity: 0;
+    transform: translateY(2vw);
+  }
+  100%{
+    top: 21vw;
+    opacity: 1;
+  }
+}
+
 @keyframes animcombo {
   0%{
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(2vw);
   }
   20%{
     opacity: 1;
@@ -355,7 +517,7 @@
   }
   100%{
     top: 46.5vw;
-    left: 32.75vw;;
+    left: 32.75vw;
     opacity: 0;
     font-size: 0.5vw;
   }
@@ -364,7 +526,7 @@
 @keyframes animcombo2 {
   0%{
     opacity: 0;
-    transform: translateY(40px);
+    transform: translateY(2vw);
   }
   20%{
     opacity: 1;

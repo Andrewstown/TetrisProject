@@ -21,12 +21,12 @@ const S = new S_Piece()
 const T = new T_Piece()
 const Z = new Z_Piece()
 const pile = [I, J, L, O, S, T, Z]
-const music = new Audio('/sounds/marathon.mp3')
-music.volume = 0.7
 
 let add = false
 let bag = []
 let drop = false
+let goal = 5
+let half = false
 let held = false
 let next = []
 let play = false
@@ -37,16 +37,19 @@ let board = [[{},{},{},{},{},{},{},{},{},{}],[{},{},{},{},{},{},{},{},{},{}],[{}
 let combo = 0
 let ghost = true
 let level = 1
+let music = null
 let voice = true
 let sound = true
 let spawn = false
-let paused = false
+let paused = true
 let player = true
 let points = 0
 let xGhost = 0
 let yGhost = 0
 let gravity = 1000
+let timerun = false
 let dropTime = 0
+let gamemode = 'marathon'
 let gameover = false
 let holdChar = ''
 let holdTime = null
@@ -60,6 +63,7 @@ let yCurrent = 0
 let countdown = 3
 let holdBlock = []
 let holdPiece = null
+let soundTime = 0
 let lastTetris = false
 let nextpieces = [[], [], [], [], []]
 let currentPiece = null
@@ -70,7 +74,6 @@ export default function Game(){
     const [score, setScore] = useState(0)
     const [blocks, setBlocks] = useState({})
     const [sprite, setSprite] = useState(null)
-    const [holdPieceS, setHoldPieceS] = useState([])
 
     const user = useContext(UserContext)
 
@@ -84,13 +87,12 @@ export default function Game(){
         }
     }, [user])
 
-
     useEffect(() => {
         setTimeout(() => {
             if (dropTime == 60){
                 dropTime = 0
             }
-            if (!(paused)){
+            if (!paused && timerun){
                 time++
                 dropTime++
             }
@@ -112,7 +114,10 @@ export default function Game(){
                         add = true
                         dropTime = 0
                         window.clearTimeout(timeDrop)
-                        playSound('ssoftdrop')
+                        if (soundTime < time){
+                            soundTime = time + 3
+                            playSound('ssoftdrop')
+                        }
                         runDropTime()
                         removePiece(0, 1)
                     }
@@ -199,7 +204,14 @@ export default function Game(){
             if (countdown > -1 ){
                 count()
             }else{
-                gameStart()
+                timerun = true
+                music = new Audio(`/sounds/${gamemode}.mp3`)
+                music.volume = 0.7
+                music.currentTime = 0
+                music.play()
+                music.loop = true
+                spawnPiece()
+                runDropTime()
                 window.addEventListener("beforeunload", e => {
                     e.returnValue = "This isn't supported anymore :("
                 })
@@ -209,7 +221,6 @@ export default function Game(){
 
     const hold2 = () => {
         holdPiece = currentPiece
-        setHoldPieceS(currentPiece.look)
         holdBlock = []
         for(let y = 0; y < currentPiece.look.length; y++){
             for (let x = 0; x < currentPiece.look[y].length; x++){
@@ -258,6 +269,7 @@ export default function Game(){
     const hitPlay = () => {
         play = true
         paused = false
+        playSound('schoose')
         gameSetup()
     }
 
@@ -305,6 +317,23 @@ export default function Game(){
             }
         }
         return true
+    }
+
+    const gameOver = () => {
+        gameover = true
+        timerun = false
+        music.pause()
+        playSound('vhappy')
+        playSound('sgameover')
+        console.log(user)
+        if (user){
+            console.log('yes')
+            console.log(user.xp, user.level)
+        }
+    }
+
+    const hitlogin = () => {
+        console.log('login')
     }
 
     const showNext = () => {
@@ -414,9 +443,29 @@ export default function Game(){
                         lastTetris = (lines == 4)
                     }
                 }
-                points += 200 * lines - (lines == 4 ? 0 : 100)
+                points += (200 * lines - (lines == 4 ? 0 : 100)) * level
                 setScore(points)
                 playSound(`serase${lines}`)
+                goal = Math.max(goal - lines, 0)
+                if (gamemode == 'sprint' && goal < 21 && !half){
+                    half = true
+                    playSound('shurryup')
+                }
+                if (goal < 1){
+                    if (gamemode == 'marathon'){
+                        if (level == 15){
+                            level = 15
+                            goal = 0
+                        }else{
+                            level++
+                            goal = 5 * level
+                            gravity *= 0.8
+                            playSound('slevelup')
+                        }
+                    }else{
+                        gameOver()
+                    }
+                }
                 window.clearTimeout(timeDrop)
                 runDropTime()
                 window.clearTimeout(lineTime)
@@ -436,10 +485,16 @@ export default function Game(){
         held = false
         next = []
         countdown = 3
-        setHoldPieceS(null)
+        holdBlock = []
+        holdPiece = null
         gameover = false
         setScore(0)
         points = 0
+        level = 1
+        goal = (gamemode == 'marathon' ? 5 : 40)
+        time = 0
+        timerun = false
+        gravity = 1000
         for (let i = 0; i < 6; i++){
             addNext()
         }
@@ -451,14 +506,6 @@ export default function Game(){
         showNext()
         setBlocks(board)
         count()
-    }
-
-    const gameStart = () => {
-        music.currentTime = 0
-        music.play()
-        music.loop = true
-        spawnPiece()
-        runDropTime()
     }
 
     const playSound = (soundr, rate = 1) => {
@@ -490,7 +537,6 @@ export default function Game(){
             }
             addPiece(0, 0)
         }else{
-            gameover = true
             for (let y = 0; y < 4; y++){
                 for (let x = 0; x < 4; x++){
                     if (currentPiece.body[y][x] == 1){
@@ -504,6 +550,7 @@ export default function Game(){
             }
             setBlocks(board)
             window.clearTimeout(timeDrop)
+            gameOver()
         }
     }
 
@@ -572,7 +619,7 @@ export default function Game(){
                     if (currentPiece.body[y][x] == 1){
                         if ((!(x + xCurrent < 0 || x + xCurrent > 9) && !(y + yCurrent < 0 || y + yCurrent > 20))){
                             let pos = board[x + xCurrent][y + yCurrent]
-                            if (pos.stop == true && (pos.color != 0 || pos.color > 7)){
+                            if (pos.stop == true && (pos.color != -1 || pos.color > 7)){
                                 tempRotation = rotation
                             }
                         }else{
@@ -602,10 +649,13 @@ export default function Game(){
                         }
                     })
                 }
-                if (distance == 0){
-                    playSound('smovefail')
-                }else{
-                    playSound('smove')
+                if (soundTime < time){
+                    soundTime = time + 5
+                    if (distance == 0){
+                        playSound('smovefail')
+                    }else{
+                        playSound('smove')
+                    }
                 }
                 return -distance
             case 2:
@@ -626,10 +676,13 @@ export default function Game(){
                         }
                     })
                 }
-                if (distance == 0){
-                    playSound('smovefail')
-                }else{
-                    playSound('smove')
+                if (soundTime < time){
+                    soundTime = time + 5
+                    if (distance == 0){
+                        playSound('smovefail')
+                    }else{
+                        playSound('smove')
+                    }
                 }
                 return distance
             default:
@@ -664,12 +717,17 @@ export default function Game(){
         playSound('schoose')
     }
 
+    const formatTime = () => {
+        return `${(time/3600 < 10 ? "0" : "") + Math.floor(time/3600)}:${((time/60)%60 < 10 ? "0" : "") + Math.floor((time/60)%60)}.${(time%60 < 10 ? "0" : "") + time%60}`
+    }
+
     return(<>
-        <p className='font' id='title'>Marathon</p>
+        <div style={{top: '15%', left: '0px', width: '100%', height: '100%', zIndex: '0', position: 'fixed', backgroundImage: `linear-gradient(${gamemode == 'marathon' ? 'white, #2BA6FF' : `#${half ? 'eea600' : '2BA6FF'}, white`})`, backgroundAttachment: 'fixed'}}/>
+        <p className='font' id='title'>{gamemode}</p>
         <img className='field' src='/field.png'/>
         <img className='fieldborder' src='/field.png'/>
-        <div id='score'>
-            {countdown < 0 ? <p>{score}</p> : null}
+        <div id='score' style={{top: '11vw', left: '37.5vw', width: '19vw', height: '4vw', display: 'flex', position: 'fixed', alignItems: 'center', justifyContent: `${gamemode == 'marathon' ? 'right' : 'left'}`}}>
+            {countdown < 0 ? <p>{gamemode == 'marathon' ? score : formatTime()}</p> : null}
         </div>
         <div className='border'>
             <div className='blockcell'></div>
@@ -699,6 +757,20 @@ export default function Game(){
             <p className='outtext' id='nexttext'>next</p>
             <p className='intext' id='nexttext'>next</p>
         </div>
+        {gameover ? <>
+            <div className='gameover'></div>
+            <p className='gameoverT'>Good Game!</p>
+            <div className='stats'>
+                <p>Time: {formatTime()}</p>
+                {user ? <>
+                    <p>XP: {Math.floor(score/100)*3}</p>
+                    <p>Coins: {Math.floor(score/100)}</p>
+                </> : <>
+                    <button className='play' id='login' onClick={hitlogin}>login</button>
+                    <p>Get more out of tetris!</p>
+                </>}
+            </div>
+        </>: null}
         {lineText.length > 0 && combo > 1 ? <>
         </> : null}
         {play ? <><div id='countdown'>
@@ -708,12 +780,12 @@ export default function Game(){
                 <div className='pause'/>
                 <p className='paused'>Paused</p>
                 <img id='control' src={'/controls.png'}/>
-                <button className='play' id='restart' onClick={hitPlay}>restart</button>
                 <button id='ghost' style={{top: '25vw', left: '32vw', color: `${ghost ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${ghost ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#ghost:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${ghost ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleGhost}>Ghost</button>
                 <button id='sound' style={{top: '28.5vw', left: '32vw', color: `${sound ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${sound ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#sound:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${sound ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleSound}>Sound</button>
                 <button id='music' style={{top: '32vw', left: '32vw', color: `${player ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${player ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#music:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${player ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleMusic}>Music</button>
                 <button id='voice' style={{top: '35.5vw', left: '32vw', color: `${voice ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${voice ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#voice:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${voice ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleVoice}>Voice</button>
             </> : null}
+            {paused || gameover ? <button className='play' id='restart' onClick={hitPlay}>restart</button> : null}
             {blocks.length > 0 && sprite && countdown < 0 ? <div>
                 {blocks.map(row => {
                     return(row.map(spot => {if (spot.y > 288 && spot.color > -1){return(<Block x={spot.x} y={spot.y} sprite={sprite} color={spot.color}/>)}}))
@@ -724,6 +796,21 @@ export default function Game(){
                 {nextpieces[0].length > 0 ? nextpieces.map(next => {
                     return(next.map(spot => {return(<Block x={spot.x} y={spot.y} sprite={sprite} color={spot.color} size={spot.size}/>)}))
                 }) : null}
+                {gamemode == 'marathon' ? <>
+                    <p className='level1'>Level</p>
+                    <p className='level2'>Level</p>
+                    <p className='level3'>{level}</p>
+                    <p className='level4'>{level}</p>
+                </> : <>
+                <div className='outbar'/>
+                <div style={{top: `${49.4-(12*(goal/40))}vw`, left: '37.9vw', width: '0.5vw', height: `${(goal/40)*12}vw`, zIndex: '1', position: 'fixed', borderStyle: 'solid', borderWidth: '0vw', borderRadius: '1vw', backgroundColor: '#e31200'}}/>
+                </>}
+                {level < 15 ? <>
+                    <p className='goal1'>Goal</p>
+                    <p className='goal2'>Goal</p>
+                    <p className='goal3'>{goal}</p>
+                    <p className='goal4'>{goal}</p>
+                </> : null}
             </div> : null}
         </> :
             <button className='play' onClick={hitPlay}>Play</button>

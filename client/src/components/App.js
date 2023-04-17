@@ -2,7 +2,7 @@ import React, {useEffect, useState, createContext} from 'react'
 import {Route, Switch, useHistory} from 'react-router-dom'
 
 import Header from './Header'
-import Game from './Game'
+import Games from './Games'
 
 import './App.css'
 
@@ -11,12 +11,19 @@ export const AvatarsContext = createContext(null)
 
 export default function App(){
   const [user, setUser] = useState(null)
+  const [games, setGames] = useState(null)
   const [avatars, setAvatars] = useState(null)
 
   useEffect(() => {
     fetch('/users')
     .then(r => r.json())
     .then(users => setUser(users[0]))
+  }, [])
+
+  useEffect(() => {
+    fetch('/games')
+    .then(r => r.json())
+    .then(games => setGames(games))
   }, [])
 
   useEffect(() => {
@@ -30,10 +37,16 @@ export default function App(){
       <AvatarsContext.Provider value={avatars}>
         <Header/>
         <Switch>
-          <Route exact path="/">
+          <Route exact path='/'>
+            {useHistory().push('/games')}
           </Route>
+          <Route path='/games'>
+            <Games games={games}/>
+          </Route>
+          <Route path="*">
+            <h1 style={{fontFamily: 'block'}}>404 not found</h1>
+          </Route> 
         </Switch>
-        <Game/>
       </AvatarsContext.Provider>
     </UserContext.Provider>
   </div>)
