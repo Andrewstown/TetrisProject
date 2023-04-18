@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react'
+import {useLocation} from 'react-router-dom'
 
 import Block from './Block.js'
 import I_Piece from './Tetriminos/I_Piece.js'
@@ -76,10 +77,12 @@ export default function Game(){
     const [sprite, setSprite] = useState(null)
 
     const user = useContext(UserContext)
+    const location = useLocation()
 
     //colors: Z-1, L-2, O-3, S-4, I-5, J-6, T-7, ghost-9
 
     useEffect(() => {
+        gamemode = location.pathname.substring(7, location.pathname.length)
         if (user){
             setSprite(user.sprite)
         }else{
@@ -722,7 +725,7 @@ export default function Game(){
     }
 
     return(<>
-        <div style={{top: '15%', left: '0px', width: '100%', height: '100%', zIndex: '0', position: 'fixed', backgroundImage: `linear-gradient(${gamemode == 'marathon' ? 'white, #2BA6FF' : `#${half ? 'eea600' : '2BA6FF'}, white`})`, backgroundAttachment: 'fixed'}}/>
+        <div style={{top: '15%', left: '0px', width: '100%', height: '85%', zIndex: '0', position: 'fixed', backgroundImage: `linear-gradient(${gamemode == 'marathon' ? 'white, #2BA6FF' : `#${half ? 'eea600' : '2BA6FF'}, white`})`, backgroundAttachment: 'fixed'}}/>
         <p className='font' id='title'>{gamemode}</p>
         <img className='field' src='/field.png'/>
         <img className='fieldborder' src='/field.png'/>
