@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react'
-import {useLocation} from 'react-router-dom'
+import {useHistory, useLocation} from 'react-router-dom'
 
 import Block from './Block.js'
 import I_Piece from './Tetriminos/I_Piece.js'
@@ -39,9 +39,9 @@ let combo = 0
 let ghost = true
 let level = 1
 let music = null
+let spawn = false
 let voice = true
 let sound = true
-let spawn = false
 let paused = true
 let player = true
 let points = 0
@@ -70,13 +70,14 @@ let nextpieces = [[], [], [], [], []]
 let currentPiece = null
 let tempRotation = 0
 
-export default function Game(){
+export default function Game({updateUser}){
     const [tickS, setTickS] = useState(0)
     const [score, setScore] = useState(0)
     const [blocks, setBlocks] = useState({})
     const [sprite, setSprite] = useState(null)
 
     const user = useContext(UserContext)
+    const history = useHistory()
     const location = useLocation()
 
     //colors: Z-1, L-2, O-3, S-4, I-5, J-6, T-7, ghost-9
@@ -113,7 +114,7 @@ export default function Game(){
                     calcRotation(1)
                     break
                 case 'ArrowDown':
-                    if (!(calcCollision(1, 2) < 1 && spawn == false)){
+                    if (!(calcCollision(1, 2) < 1)){
                         add = true
                         dropTime = 0
                         window.clearTimeout(timeDrop)
@@ -210,14 +211,10 @@ export default function Game(){
                 timerun = true
                 music = new Audio(`/sounds/${gamemode}.mp3`)
                 music.volume = 0.7
-                music.currentTime = 0
-                music.play()
                 music.loop = true
+                if (player) music.play()
                 spawnPiece()
                 runDropTime()
-                window.addEventListener("beforeunload", e => {
-                    e.returnValue = "This isn't supported anymore :("
-                })
             }
         }, 750)
     }
@@ -298,7 +295,6 @@ export default function Game(){
             writePiece(currentPiece.color, true)
             lineCheck()
         }else{
-            spawn = false
             yCurrent += y
             writePiece(currentPiece.color, false)
             if (ghost)
@@ -328,15 +324,21 @@ export default function Game(){
         music.pause()
         playSound('vhappy')
         playSound('sgameover')
-        console.log(user)
         if (user){
-            console.log('yes')
-            console.log(user.xp, user.level)
+            let gain = user.xp + (formatScore()*3)
+            let xp = (gain%3000)
+            let coins = user.coins + formatScore()
+            let level = user.level + Math.floor(gain/3000)
+            fetch(`/users/${user.name}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-type": "application/json"
+                },
+                body: JSON.stringify({name: user.name, xp: xp, level: level, coins: coins})
+            })
+            .then(r => r.json())
+            .then(data => updateUser(data))
         }
-    }
-
-    const hitlogin = () => {
-        console.log('login')
     }
 
     const showNext = () => {
@@ -462,7 +464,7 @@ export default function Game(){
                         }else{
                             level++
                             goal = 5 * level
-                            gravity *= 0.8
+                            gravity *= 0.75
                             playSound('slevelup')
                         }
                     }else{
@@ -522,6 +524,7 @@ export default function Game(){
     }
 
     const spawnPiece = () => {
+        spawn = false
         currentPiece = next[0]
         currentPiece.rotate(0)
         rotation = 0
@@ -532,7 +535,6 @@ export default function Game(){
         xCurrent = 3
         yCurrent = 0
         if (canSpawn()){
-            spawn = true
             if (justHeld == false){
                 held = false
             }else{
@@ -560,14 +562,15 @@ export default function Game(){
     const runDropTime = (timer = gravity) => {
         timeDrop = setTimeout(() => {
             if (!gameover && ! stop){
-                if (calcCollision(1, 2) < 1 && spawn == false){
+                if (calcCollision(1, 2) < 1){
+                    spawn = true
                     writePiece(currentPiece.color, true)
                     lineCheck()
                     playSound('splace')
                 }else{
                     removePiece(0, 1)
                 }
-                if (calcCollision(1, 2) < 1){
+                if (calcCollision(1, 2) < 1 && spawn == false){
                     window.clearTimeout(timeDrop)
                     runDropTime(1000)
                 }else{
@@ -724,9 +727,13 @@ export default function Game(){
         return `${(time/3600 < 10 ? "0" : "") + Math.floor(time/3600)}:${((time/60)%60 < 10 ? "0" : "") + Math.floor((time/60)%60)}.${(time%60 < 10 ? "0" : "") + time%60}`
     }
 
+    const formatScore = () => {
+        return (Math.floor((points/100)*(gamemode == 'sprint' && goal == 0 ? (1 - (time / 36000)) * 3 : 1)))
+    }
+
     return(<>
-        <div style={{top: '15%', left: '0px', width: '100%', height: '85%', zIndex: '0', position: 'fixed', backgroundImage: `linear-gradient(${gamemode == 'marathon' ? 'white, #2BA6FF' : `#${half ? 'eea600' : '2BA6FF'}, white`})`, backgroundAttachment: 'fixed'}}/>
-        <p className='font' id='title'>{gamemode}</p>
+        <div style={{top: '0%', left: '0px', width: '100%', height: '100%', zIndex: '0', position: 'fixed', backgroundImage: `linear-gradient(${gamemode == 'marathon' ? 'white, #2BA6FF' : `#${half ? 'eea600' : '2BA6FF'}, white`})`, backgroundAttachment: 'fixed'}}/>
+        <p className='font'>{gamemode}</p>
         <img className='field' src='/field.png'/>
         <img className='fieldborder' src='/field.png'/>
         <div id='score' style={{top: '11vw', left: '37.5vw', width: '19vw', height: '4vw', display: 'flex', position: 'fixed', alignItems: 'center', justifyContent: `${gamemode == 'marathon' ? 'right' : 'left'}`}}>
@@ -766,11 +773,14 @@ export default function Game(){
             <div className='stats'>
                 <p>Time: {formatTime()}</p>
                 {user ? <>
-                    <p>XP: {Math.floor(score/100)*3}</p>
-                    <p>Coins: {Math.floor(score/100)}</p>
+                    <p>XP: {formatScore()*3}</p>
+                    <p>Coins: {formatScore()}</p>
                 </> : <>
-                    <button className='play' id='login' onClick={hitlogin}>login</button>
                     <p>Get more out of tetris!</p>
+                    <button className='play' id='login' onClick={() => {
+                        history.push('/login')
+                        window.location.reload()
+                    }}>login</button>
                 </>}
             </div>
         </>: null}
@@ -783,10 +793,10 @@ export default function Game(){
                 <div className='pause'/>
                 <p className='paused'>Paused</p>
                 <img id='control' src={'/controls.png'}/>
-                <button id='ghost' style={{top: '25vw', left: '32vw', color: `${ghost ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${ghost ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#ghost:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${ghost ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleGhost}>Ghost</button>
-                <button id='sound' style={{top: '28.5vw', left: '32vw', color: `${sound ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${sound ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#sound:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${sound ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleSound}>Sound</button>
-                <button id='music' style={{top: '32vw', left: '32vw', color: `${player ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${player ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#music:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${player ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleMusic}>Music</button>
-                <button id='voice' style={{top: '35.5vw', left: '32vw', color: `${voice ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${voice ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#voice:hover') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${voice ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleVoice}>Voice</button>
+                <button id='ghost' style={{top: '25vw', left: '32vw', color: `${ghost ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${ghost ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#ghost:active') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${ghost ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleGhost}>Ghost</button>
+                <button id='sound' style={{top: '28.5vw', left: '32vw', color: `${sound ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${sound ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#sound:active') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${sound ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleSound}>Sound</button>
+                <button id='music' style={{top: '32vw', left: '32vw', color: `${player ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${player ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#music:active') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${player ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleMusic}>Music</button>
+                <button id='voice' style={{top: '35.5vw', left: '32vw', color: `${voice ? '#19e637' : '#ff3d40'}`, width: '8.3vw', cursor: 'grab', height: '3.1vw', display: 'flex', zIndex: '9', position: 'fixed', fontSize: '2vw', aligniTems: 'center', fontFamily: 'block', borderColor: `${voice ? '#19e637' : '#ff3d40'}`, borderStyle: `${document.querySelector('#voice:active') ? 'inset' : 'outset'}`, borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `${voice ? '#19e637' : '#ff3d40'}`, WebkitTextStroke: '0.125vw black'}} onClick={toggleVoice}>Voice</button>
             </> : null}
             {paused || gameover ? <button className='play' id='restart' onClick={hitPlay}>restart</button> : null}
             {blocks.length > 0 && sprite && countdown < 0 ? <div>

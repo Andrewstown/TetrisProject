@@ -24,32 +24,31 @@ class Users(Resource):
     def get(self):
         return make_response([user.to_dict(rules=('-user_games', '-user_avatars', '-user_sprites',)) for user in User.query.all()], 200)
     
-    # #POST
-    # def post(self):
-    #     try:
-    #         r_json = request.get_json()
-    #         new_user = User(
-    #             name = r_json['name'],
-    #             email = r_json['email'],
-    #             password = r_json['password']
-    #         )
+    #POST
+    def post(self):
+        try:
+            r_json = request.get_json()
+            new_user = User(
+                name = r_json['name'],
+                password = r_json['password']
+            )
 
-    #         db.session.add(new_user)
-    #         db.session.commit()
-    #         session['user_id'] = new_user.id
+            db.session.add(new_user)
+            db.session.commit()
+            session['user_id'] = new_user.id
 
-    #         return make_response(jsonify(new_user.to_dict()), 201)
+            return make_response(jsonify(new_user.to_dict()), 201)
         
-    #     except ValueError as e:
-    #         return make_response({'error': e.__str__()}, 400)
+        except ValueError as e:
+            return make_response({'error': e.__str__()}, 400)
 
 api.add_resource(Users, '/users')
 
-#/users/:id
-class UserById(Resource):
+#/users/:name
+class UserByName(Resource):
     #GET
     def get(self, id):
-        user = User.query.filter_by(id = id).first()
+        user = User.query.filter_by(name=request.get_json()['name']).first()
 
         if not user:
             return make_response({'error': 'User Not Found!'}, 404)
@@ -58,7 +57,7 @@ class UserById(Resource):
 
     #PATCH
     def patch(self, id):
-        user = User.query.filter_by(id= id).first()
+        user = User.query.filter_by(name=request.get_json()['name']).first()
 
         if not user:
             return make_response({'error': 'User Not Found!' }, 404)
@@ -75,22 +74,7 @@ class UserById(Resource):
         except ValueError as e:
             return make_response({'error': e.__str__()}, 400)
 
-    #DELETE
-    def delete(self, id):
-        user = User.query.filter_by(id = id).first()
-
-        if not user:
-            return make_response({'error': 'User Not Found!'}, 404)
-
-        [db.session.delete(review) for review in Review.query.filter(Review.user_id == user.id).all()]
-        [db.session.delete(usergame) for usergame in UserGame.query.filter(UserGame.user_id == user.id).all()]
-
-        db.session.delete(user)
-        db.session.commit()
-
-        return make_response('', 204)
-
-api.add_resource(UserById, '/users/<int:id>')
+api.add_resource(UserByName, '/users/<string:id>')
 
 #/games
 class Games(Resource):
@@ -100,13 +84,13 @@ class Games(Resource):
 
 api.add_resource(Games, '/games')
 
-#/games/:id
-class GameById(Resource):
-    #GET
-    def get(self, id):
-        return make_response(Game.query.filter_by(id = id).first().to_dict(), 200)
+# #/games/:id
+# class GameById(Resource):
+#     #GET
+#     def get(self, id):
+#         return make_response(Game.query.filter_by(id = id).first().to_dict(), 200)
 
-api.add_resource(GameById, '/games/<int:id>')
+# api.add_resource(GameById, '/games/<int:id>')
 
 #/avatars
 class Avatars(Resource):
@@ -189,42 +173,42 @@ api.add_resource(SpritesById, '/sprites/<int:id>')
     
 # api.add_resource(UserGameById, '/usergames/<int:id>')
 
-# class Login(Resource):
-#     def post(self):
-#         user = User.query.filter_by(name=request.get_json()['name']).first()
+class Login(Resource):
+    def post(self):
+        user = User.query.filter_by(name=request.get_json()['name']).first()
         
-#         if not user:
-#             return make_response({'error': 'Invalid Username/Password'}, 403)
+        if not user:
+            return make_response({'error': 'Invalid Username/Password'}, 403)
 
-#         session['user_id'] = user.id
-#         response = make_response(
-#             user.to_dict(),
-#             200
-#         )
-#         return response
-# api.add_resource(Login, '/login')
+        session['user_id'] = user.id
+        response = make_response(
+            user.to_dict(),
+            200
+        )
+        return response
+api.add_resource(Login, '/login')
 
-# class Logout(Resource):
-#     def delete(self):
-#         session['user_id'] = None
-#         response = make_response('',204)
-#         return response
+class Logout(Resource):
+    def delete(self):
+        session['user_id'] = None
+        response = make_response('',204)
+        return response
 
-# api.add_resource(Logout, '/logout')
+api.add_resource(Logout, '/logout')
 
-# class AuthorizedSession(Resource):
-#     def get(self):
-#         user= User.query.filter_by(id=session.get('user_id')).first()
-#         if user:
-#             response = make_response(
-#                 user.to_dict(),
-#                 200
-#             )
-#             return response
-#         else:
-#             abort(401, "Unauthorized")
+class AuthorizedSession(Resource):
+    def get(self):
+        user= User.query.filter_by(id=session.get('user_id')).first()
+        if user:
+            response = make_response(
+                user.to_dict(),
+                200
+            )
+            return response
+        else:
+            abort(401, "Unauthorized")
 
-# api.add_resource(AuthorizedSession, '/authorized')
+api.add_resource(AuthorizedSession, '/authorized')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

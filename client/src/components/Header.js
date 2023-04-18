@@ -1,13 +1,32 @@
 import React, {useContext} from 'react'
-import {NavLink} from "react-router-dom"
+import {NavLink, useHistory, useLocation} from "react-router-dom"
 
 import './Header.css'
 
 import {UserContext, AvatarsContext} from './App'
 
-export default function Header(){
+export default function Header({updateUser}){
     const user = useContext(UserContext)
     const avatars = useContext(AvatarsContext)
+    const history = useHistory()
+
+    const logout = () => {
+        fetch('/logout',{
+            method: 'DELETE'
+        })
+        .then(r => {
+            if(r.ok){
+            updateUser(null)
+            history.push('/games')
+            window.location.reload()
+            }
+        })
+    }
+
+    const changeLocation = to => {
+        history.push(`/${to}`)
+        window.location.reload()
+    }
 
     return(<div className='backdrop'>
         {avatars ? <>
@@ -22,9 +41,9 @@ export default function Header(){
                 <p className='text' id='level'>Level: {user.level}</p>
             </>: null}
         </>: null}
-        {/* <nav className='nav'>
-            <NavLink className='link' to="/store">Store</NavLink>
-        </nav> */}
+        <button className='link' id='games' onClick={() => changeLocation('games')}>Games</button>
+        <button className='link' id='store' onClick={() => changeLocation('store')}>Store</button>
+        <button className='link' id='log' onClick={() => (user ? logout() : changeLocation('login'))}>{user ? 'Logout' : 'Login'}</button>
         <img className='logo' src='/tetrisfriends.png'></img>
     </div>)
 }
