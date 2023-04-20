@@ -117,7 +117,7 @@
 }
 
 #login{
-  top: 36.5vw;
+  top: 38vw;
   left: 43vw;
   color: #d2d2d2;
   width: 10vw;
@@ -142,7 +142,7 @@
 }
 
 .stats{
-  top: 26vw;
+  top: 28.5vw;
   left: 40vw;
   width: 16vw;
   height: 12vw;
@@ -151,8 +151,9 @@
 }
 
 .stats p{
-  z-index: 5;
   color: #FEFE00;
+  margin-top: -1vw;
+  z-index: 5;
   font-size: 1.8vw;
   font-family: block;
   -webkit-text-stroke: 0.16vw black;

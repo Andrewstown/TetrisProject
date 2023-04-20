@@ -70,7 +70,7 @@
 
 #level{
   top: 5.35vw;
-  left: 20vw;
+  left: 19.6vw;
   z-index: 2;
   font-size: 1.22vw;
   border-width: 1.3vw;
@@ -104,7 +104,7 @@
 #xp-bar{
   top: 7.8vw;
   left: 13.8vw;
-  width: 6.2vw;
+  width: 5.8vw;
   height: 1.5vw;
   position: fixed;
   background-color: #b1daf7;

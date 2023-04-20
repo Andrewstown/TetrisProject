@@ -62,6 +62,7 @@ let timeDrop = null
 let xCurrent = 0
 let yCurrent = 0
 let countdown = 3
+let highscore = 0
 let holdBlock = []
 let holdPiece = null
 let soundTime = 0
@@ -69,8 +70,9 @@ let lastTetris = false
 let nextpieces = [[], [], [], [], []]
 let currentPiece = null
 let tempRotation = 0
+let usergameindex = -1
 
-export default function Game({updateUser}){
+export default function Game({updateUser, game, handleLogin}){
     const [tickS, setTickS] = useState(0)
     const [score, setScore] = useState(0)
     const [blocks, setBlocks] = useState({})
@@ -81,29 +83,6 @@ export default function Game({updateUser}){
     const location = useLocation()
 
     //colors: Z-1, L-2, O-3, S-4, I-5, J-6, T-7, ghost-9
-
-    useEffect(() => {
-        gamemode = location.pathname.substring(7, location.pathname.length)
-        if (user){
-            setSprite(user.sprite)
-        }else{
-            setSprite('/sprites/original.png')
-        }
-    }, [user])
-
-    useEffect(() => {
-        setTimeout(() => {
-            if (dropTime == 60){
-                dropTime = 0
-            }
-            if (!paused && timerun){
-                time++
-                dropTime++
-            }
-            tick++
-            setTickS(tick / 60)
-        }, 1000 / 60)
-    }, [tickS])
     
     //GAME SETUP
     useEffect(() => {
@@ -162,6 +141,34 @@ export default function Game({updateUser}){
             }
         })
     }, [])
+
+    useEffect(() => {
+        gamemode = location.pathname.substring(7, location.pathname.length)
+        if (user){
+            setSprite(user.sprite)
+            for (let y = 0; y < user.user_games.length; y++){
+                if (user.user_games[y].game_id == game.id){
+                    usergameindex = y
+                }
+            }
+        }else{
+            setSprite('/sprites/original.png')
+        }
+    }, [user])
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (dropTime == 60){
+                dropTime = 0
+            }
+            if (!paused && timerun){
+                time++
+                dropTime++
+            }
+            tick++
+            setTickS(tick / 60)
+        }, 1000 / 60)
+    }, [tickS])
 
     const hold = () => {
         held = true
@@ -318,7 +325,7 @@ export default function Game({updateUser}){
         return true
     }
 
-    const gameOver = () => {
+    const gameOver = (win = false) => {
         gameover = true
         timerun = false
         music.pause()
@@ -329,6 +336,17 @@ export default function Game({updateUser}){
             let xp = (gain%3000)
             let coins = user.coins + formatScore()
             let level = user.level + Math.floor(gain/3000)
+            highscore = user.user_games[usergameindex].highscore
+            if (gamemode == 'sprint' ? (win ? time < highscore || highscore == 0: false) : points > highscore){
+                highscore = gamemode == 'sprint' ? time : points
+                fetch(`/usergames/${user.user_games[usergameindex].id}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify({highscore: highscore})
+                })
+            }
             fetch(`/users/${user.name}`, {
                 method: "PATCH",
                 headers: {
@@ -459,8 +477,7 @@ export default function Game({updateUser}){
                 if (goal < 1){
                     if (gamemode == 'marathon'){
                         if (level == 15){
-                            level = 15
-                            goal = 0
+                            gameOver(true)
                         }else{
                             level++
                             goal = 5 * level
@@ -468,7 +485,7 @@ export default function Game({updateUser}){
                             playSound('slevelup')
                         }
                     }else{
-                        gameOver()
+                        gameOver(true)
                     }
                 }
                 window.clearTimeout(timeDrop)
@@ -723,8 +740,8 @@ export default function Game({updateUser}){
         playSound('schoose')
     }
 
-    const formatTime = () => {
-        return `${(time/3600 < 10 ? "0" : "") + Math.floor(time/3600)}:${((time/60)%60 < 10 ? "0" : "") + Math.floor((time/60)%60)}.${(time%60 < 10 ? "0" : "") + time%60}`
+    const formatTime = (num = time) => {
+        return `${(num/3600 < 10 ? "0" : "") + Math.floor(num/3600)}:${((num/60)%60 < 10 ? "0" : "") + Math.floor((num/60)%60)}.${(num%60 < 10 ? "0" : "") + num%60}`
     }
 
     const formatScore = () => {
@@ -772,15 +789,14 @@ export default function Game({updateUser}){
             <p className='gameoverT'>Good Game!</p>
             <div className='stats'>
                 <p>Time: {formatTime()}</p>
+                <p>Score: {points}</p>
                 {user ? <>
                     <p>XP: {formatScore()*3}</p>
                     <p>Coins: {formatScore()}</p>
+                    <p>High: {gamemode == 'sprint' ? formatTime(highscore) : highscore}</p>
                 </> : <>
                     <p>Get more out of tetris!</p>
-                    <button className='play' id='login' onClick={() => {
-                        history.push('/login')
-                        window.location.reload()
-                    }}>login</button>
+                    <button className='play' id='login' onClick={handleLogin}>login</button>
                 </>}
             </div>
         </>: null}

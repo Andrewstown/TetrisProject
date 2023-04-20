@@ -194,7 +194,7 @@ class UserGameById(Resource):
         usergame = UserGame.query.filter_by(id = id).first()
 
         if not usergame:
-            return make_response({ 'error': 'UserGame Not Found!'}, 404)
+            return make_response({'error': 'UserGame Not Found!'}, 404)
 
         try:
             r_json = request.get_json()

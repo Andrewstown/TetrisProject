@@ -1,7 +1,4 @@
 import React, {useState, useEffect, useContext, useReducer} from 'react'
-import {useHistory} from "react-router-dom"
-
-import Block from './Block'
 
 import './Store.css'
 
@@ -11,7 +8,7 @@ let music = null
 let sound2 = true
 let player2 = true
 
-export default function Store({updateUser}){
+export default function Store({updateUser, handleLogin}){
     const [shop, setShop] = useState(false)
     const [click, setClick] = useState(true)
     const [sound, setSound] = useState(true)
@@ -22,7 +19,6 @@ export default function Store({updateUser}){
     const [, forceUpdate] = useReducer(x => x + 1, 0)
 
     const user = useContext(UserContext)
-    const history = useHistory()
 
     let scale = window.innerWidth / 1879
 
@@ -176,11 +172,6 @@ export default function Store({updateUser}){
         }
     }
 
-    const handleLogi = () => {
-        history.push('/login')
-        window.location.reload()
-    }
-
     const handleClick = t => {
         setClick(t)
         if (t != click){
@@ -219,7 +210,7 @@ export default function Store({updateUser}){
                 <button onClick={() => {handleClick(false)}} style={{top: '12.4vw', left: '17vw', color: '#efefef', width: '11vw', cursor: 'pointer', height: '3vw', display: 'flex', zindex: '1', position: 'fixed', fontSize: '2vw', alignItems: 'center', fontFamily: 'block', borderColor: `#${!click ? '989898' : 'd8d8d8'}`, borderRadius: '1vw 1vw 0vw 0vw', borderStyle: 'solid', borderWidth: '0.4vw', justifyContent: 'center', backgroundColor: `#${!click ? 'e1e1e1' : 'efefef'}`, WebkitTextStroke: `0.12vw #${!click ? '515151' : 'b1b1b1'}`}}>Sprites</button>
             </> : null}
         </> : <>
-            <button className='logi' onClick={handleLogi}>Login</button>
+            <button className='logi' onClick={handleLogin}>Login</button>
             <div className='logitext'>Please login to use the shop!</div>
         </>}
         <div className='store'>

@@ -12,6 +12,27 @@
     background-attachment: fixed;
 }
 
+.log{
+    top: -17.4vw;
+    left: 0vw;
+    color: #d2d2d2;
+    width: 6vw;
+    cursor: grab;
+    height: 2.5vw;
+    display: flex;
+    z-index: 9;
+    position: relative;
+    font-size: 1.5vw;
+    align-items: center;
+    font-family: block;
+    border-color: #a2a2a2;
+    border-style: outset;
+    border-width: 0.5vw;
+    justify-content: center;
+    background-color: #a2a2a2;
+    -webkit-text-stroke: 0.1vw black;
+}
+
 #gamecard:hover{
     cursor: pointer;
 }
@@ -22,6 +43,14 @@
 
 #gamecard:hover .gamedescription{
     display: none;
+}
+
+.gamecoin{
+    top: -14.8vw;
+    left: 1vw;
+    width: 2.4vw;
+    z-index: 8;
+    position: relative;
 }
 
 .gameimage{
@@ -61,15 +90,18 @@
 
 .gamescore{
     top: 13.3vw;
-    left: -1vw;
+    left: -2.5vw;
     color: white;
-    width: 17vw;
+    width: 20vw;
     margin: 0px;
     z-index: 8;
+    display: flex;
     position: relative;
+    text-align: center;
     font-size: 1.5vw;
     text-align: left;
     font-family: block;
+    justify-content: center;
     -webkit-text-stroke: 0.1vw black;
 }
 
@@ -87,7 +119,7 @@
 .gamedescription{
     top: 2vw;
     color: white;
-    height: 10.35vw;
+    height: 10.32vw;
     margin: 0px;
     position: relative;
     font-size: 1.7vw;

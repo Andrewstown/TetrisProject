@@ -1,5 +1,5 @@
 import React, {useEffect, useState, createContext} from 'react'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Switch, useHistory} from 'react-router-dom'
 
 import Header from './Header'
 import Login from './Login'
@@ -13,7 +13,9 @@ export const UserContext = createContext(null)
 
 export default function App(){
   const [user, setUser] = useState(null)
-  const [games, setGames] = useState(null)
+  const [game, setGame] = useState(null)
+
+  const history = useHistory()
 
   useEffect(() => {
     fetch('/authorized')
@@ -26,18 +28,23 @@ export default function App(){
     })
   },[])
 
+  const handleLogin = () => {
+    history.push('/login')
+    window.location.reload()
+  }
+
   return(<div className='app'>
     <UserContext.Provider value={user}>
       <Header updateUser={setUser}/>
       <Switch>
         <Route exact path='/games'>
-          <Games updateUser={setUser}/>
+          <Games updateUser={setUser} updateGame={setGame} handleLogin={handleLogin}/>
         </Route>
         <Route path='/games/'>
-          <Game updateUser={setUser}/>
+          <Game updateUser={setUser} game={game} handleLogin={handleLogin}/>
         </Route>
         <Route exact path='/store'>
-          <Store updateUser={setUser}/>
+          <Store updateUser={setUser} handleLogin={handleLogin}/>
         </Route>
         <Route exact path='/login'>
           <Login updateUser={setUser}/>

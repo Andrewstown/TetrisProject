@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
         print('Creating Games...')
         games = [
-            Game(color = '#44a8fc', image = '/gamepics/marathon.png', price = 0, title = 'marathon', description = 'Get your highest score with ramping difficulty!'),
+            Game(color = '#44a8fc', image = '/gamepics/marathon.png', price = 0, title = 'marathon', description = 'Clear 15 levels to Win the game!'),
             Game(color = '#b63dfa', image = '/gamepics/sprint.png', price = 1000, title = 'sprint', description = 'Clear 40 lines as fast as possible!'),
         ]
         db.session.add_all([game for game in games])
