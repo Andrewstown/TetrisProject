@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: ed6c77ddc181
+Revision ID: 85faa93509d0
 Revises: 
-Create Date: 2023-04-06 12:33:42.886844
+Create Date: 2023-04-20 12:41:43.404524
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'ed6c77ddc181'
+revision = '85faa93509d0'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -22,13 +22,14 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('image', sa.String(), nullable=True),
-    sa.Column('price', sa.Float(), nullable=True),
+    sa.Column('price', sa.Integer(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('games',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('color', sa.String(), nullable=True),
     sa.Column('image', sa.String(), nullable=True),
     sa.Column('price', sa.Float(), nullable=True),
     sa.Column('title', sa.String(), nullable=True),
@@ -41,16 +42,19 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=True),
     sa.Column('image', sa.String(), nullable=True),
-    sa.Column('price', sa.Float(), nullable=True),
+    sa.Column('price', sa.Integer(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('users',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('xp', sa.Integer(), nullable=True),
     sa.Column('name', sa.String(), nullable=True),
+    sa.Column('coins', sa.Integer(), nullable=True),
+    sa.Column('level', sa.Integer(), nullable=True),
     sa.Column('avatar', sa.String(), nullable=True),
-    sa.Column('points', sa.Integer(), nullable=True),
+    sa.Column('sprite', sa.String(), nullable=True),
     sa.Column('password', sa.String(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -58,7 +62,6 @@ def upgrade():
     )
     op.create_table('useravatars',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('highscore', sa.Integer(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('avatar_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['avatar_id'], ['avatars.id'], name=op.f('fk_useravatars_avatar_id_avatars')),
