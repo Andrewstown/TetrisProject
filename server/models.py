@@ -108,7 +108,6 @@ class UserAvatar(db.Model, SerializerMixin):
     __tablename__ = 'useravatars'
 
     id = db.Column(db.Integer, primary_key=True)
-    highscore = db.Column(db.Integer, default='0')
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     avatar_id = db.Column(db.Integer, db.ForeignKey('avatars.id'))
