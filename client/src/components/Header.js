@@ -1,14 +1,21 @@
-import React, {useContext} from 'react'
-import {NavLink, useHistory, useLocation} from "react-router-dom"
+import React, {useState, useEffect, useContext} from 'react'
+import {useHistory} from "react-router-dom"
 
 import './Header.css'
 
-import {UserContext, AvatarsContext} from './App'
+import {UserContext} from './App'
 
 export default function Header({updateUser}){
+    const [avatar, setAvatar] = useState()
+
     const user = useContext(UserContext)
-    const avatars = useContext(AvatarsContext)
     const history = useHistory()
+
+    useEffect(() => {
+        fetch('/avatar')
+        .then(r => r.json())
+        .then(a => setAvatar(a[0].image))
+    }, [])
 
     const logout = () => {
         fetch('/logout',{
@@ -29,9 +36,9 @@ export default function Header({updateUser}){
     }
 
     return(<div className='backdrop'>
-        {avatars ? <>
+        {avatar ? <>
             <p className='text' id='name'>{user ? user.name : 'Guest'}</p>
-            <img className='avatar' src={user ? user.avatar : avatars[0].image}></img>
+            <img className='avatar' src={user ? user.avatar : avatar}></img>
             {user ? <>
                 <img className='coin' src='/coin.png'></img>
                 <p className='text' id='coins'>0i Coins: {user.coins}</p>

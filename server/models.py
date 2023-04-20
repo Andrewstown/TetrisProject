@@ -81,7 +81,7 @@ class Avatar(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     image = db.Column(db.String)
-    price = db.Column(db.Float)
+    price = db.Column(db.Integer)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
@@ -91,7 +91,7 @@ class Sprite(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     image = db.Column(db.String)
-    price = db.Column(db.Float)
+    price = db.Column(db.Integer)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 

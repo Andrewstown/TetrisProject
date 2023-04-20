@@ -25,9 +25,10 @@
 }
 
 .gameimage{
-    top: -3.75vw;
+    top: 0vw;
     left: 2.25vw;
     width: 10vw;
+    margin: 0px;
     display: none;
     position: relative;
     border-color: black;
@@ -36,10 +37,46 @@
     border-radius: 1vw;
 }
 
-.gametitle{
-    top: -10%;
+.gamelock1{
+    top: -14.8vw;
+    left: 0vw;
+    width: 15vw;
+    height: 15vw;
+    opacity: 0.6;
+    z-index: 9;
+    position: relative;
+    border-radius: 1.5vw;
+    background-color: #353535;
+}
+
+.gamelock2{
+    top: -26.3vw;
+    left: -0.35vw;
+    width: 3vw;
+    height: 3vw;
+    opacity: 1;
+    z-index: 10;
+    position: relative;
+}
+
+.gamescore{
+    top: 13.3vw;
+    left: -1vw;
     color: white;
-    display: block;
+    width: 17vw;
+    margin: 0px;
+    z-index: 8;
+    position: relative;
+    font-size: 1.5vw;
+    text-align: left;
+    font-family: block;
+    -webkit-text-stroke: 0.1vw black;
+}
+
+.gametitle{
+    top: 1vw;
+    color: white;
+    margin: 0px;
     position: relative;
     font-size: 2.3vw;
     text-align: center;
@@ -48,9 +85,12 @@
 }
 
 .gamedescription{
+    top: 2vw;
     color: white;
+    height: 10.35vw;
+    margin: 0px;
     position: relative;
-    font-size: 1.5vw;
+    font-size: 1.7vw;
     text-align: center;
     font-family: block;
     -webkit-text-stroke: 0.07vw black;

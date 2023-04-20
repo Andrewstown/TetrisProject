@@ -57,6 +57,29 @@
     border-style: inset;
 }
 
+.swap{
+    left: 41vw;
+    top: 41vw;
+    color: #d2d2d2;
+    cursor: grab;
+    margin: 1vw;
+    display: flex;
+    position: fixed;
+    font-size: 1vw;
+    align-items: center;
+    font-family: block;
+    border-color: #a2a2a2;
+    border-style: outset;
+    border-width: 0.5vw;
+    justify-content: center;
+    background-color: #a2a2a2;
+    -webkit-text-stroke: 0.08vw black;
+}
+
+.swap:active{
+    border-style: inset;
+}
+
 .error{
     top: 15vw;
     color: #e33524;

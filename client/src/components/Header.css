@@ -24,7 +24,7 @@
   border-color: #1685d2;
   border-style: ridge;
   border-width: 1.3vw;
-  -webkit-text-stroke: 3px black;
+  -webkit-text-stroke: 0.15vw black;
   background-color: #2BA6FF;
 }
 
@@ -39,7 +39,7 @@
 
 .logo{
   top: 2vw;
-  right: 2.5%;
+  right: 2.1%;
   width: 8vw;
   position: fixed;
 }
@@ -55,6 +55,7 @@
   color: whitesmoke;
   z-index: 2;
   position: fixed;
+  font-family: block;
   border-color: #1685d2;
   border-style: ridge;
   border-width: 1.3vw;
@@ -86,7 +87,7 @@
 }
 
 #games{
-  right: 22.5vw;;
+  right: 22.4vw;;
 }
 
 .avatar{

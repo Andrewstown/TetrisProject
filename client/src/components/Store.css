@@ -1,0 +1,280 @@
+.backstore{
+    top: 0%;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    position: fixed;
+    background-image: linear-gradient(#ff8d8a, #ffe6e6);
+    background-attachment: fixed;
+}
+
+.list{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.shop{
+    top: 29vw;
+    left: 39vw;
+    color: #50ec67;
+    width: 18vw;
+    cursor: grab;
+    height: 6.75vw;
+    z-index: 2;
+    position: fixed;
+    font-size: 4.4vw;
+    font-family: block;
+    border-color: #13ae2a;
+    border-style: outset;
+    border-width: 1vw;
+    background-color: #13ae2a;
+    -webkit-text-stroke: 0.25vw black;
+}
+
+.shop:active{
+    border-style: inset;
+}
+
+.store{
+    top: 15vw;
+    left: 6vw;
+    right: 6vw;
+    height: 35vw;
+    position: fixed;
+    border-color: #989898;
+    border-radius: 0vw 3vw 3vw 3vw;
+    border-style: solid;
+    border-width: 0.4vw;
+    background-color: #f8f8f8;
+}
+
+.logi{
+    top: 32vw;
+    left: 43vw;
+    color: #d2d2d2;
+    width: 10vw;
+    cursor: grab;
+    height: 4vw;
+    display: flex;
+    z-index: 5;
+    position: fixed;
+    font-size: 2.5vw;
+    align-items: center;
+    font-family: block;
+    border-color: #a2a2a2;
+    border-style: outset;
+    border-width: 0.5vw;
+    justify-content: center;
+    background-color: #a2a2a2;
+    -webkit-text-stroke: 0.15vw black;
+}
+
+.logitext{
+    top: 26vw;
+    left: 38.5vw;
+    width: 20vw;
+    z-index: 1;
+    position: fixed;
+    font-size: 2vw;
+    text-align: center;
+    font-family: block;
+    -webkit-text-stroke: 0.15vw black;
+}
+
+.avat{
+    width: 7vw;
+    cursor: pointer;
+    height: 7vw;
+    margin: 0.5vw;
+    position: relative;
+    transition: 0.1s;
+    border-color: #989898;
+    border-radius: 1.5vw;
+    border-style: solid;
+    border-width: 0.3vw;
+    background-color: #e7e7e7;
+}
+
+.avat:hover{
+    width: 8vw;
+    height: 8vw;
+}
+
+.avat:hover .avatline2{
+    top: 6vw;
+    width: 8vw;
+}
+
+.avat:hover .avatpic{
+    width: 4.6vw;
+}
+
+.avat:hover .avatback{
+    width: 8vw;
+    height: 5vw;
+}
+
+.avat:hover .avatname{
+    top: 6.52vw;
+    width: 8vw;
+    font-size: 1.2vw;
+}
+
+.avatpic{
+    top: 1.7vw;
+    left: 1.6vw;
+    width: 3.6vw;
+    position: absolute;
+    transition: 0.1s;
+}
+
+.avatback{
+    top: 1.4vw;
+    left: 0vw;
+    width: 7vw;
+    height: 4vw;
+    position: absolute;
+    transition: 0.1s;
+    background-color: #2BA6FF;
+}
+
+.avatcoin{
+    top: 0.08vw;
+    right: 4.1vw;
+    width: 1.2vw;
+    position: absolute;
+}
+
+.avatname{
+    top: 5.7vw;
+    left: 0vw;
+    width: 7vw;
+    z-index: 8;
+    position: absolute;
+    font-size: 1vw;
+    text-align: center;
+    transition: 0.1s;
+    font-family: block;
+}
+
+.avatline2{
+    top: 5.1vw;
+    width: 7vw;
+    height: 0.25vw;
+    z-index: 3;
+    position: relative;
+    transition: 0.1s;
+    background-color: #989898;
+}
+
+.avatlock1{
+    top: 0vw;
+    left: 0vw;
+    width: inherit;
+    height: inherit;
+    opacity: 0.4;
+    z-index: 9;
+    position: absolute;
+    border-radius: 1.2vw;
+    background-color: #aeaeae;
+}
+
+.avatlock2{
+    top: 0.15vw;
+    left: 0.5vw;
+    width: 1vw;
+    height: 1vw;
+    z-index: 10;
+    position: absolute;
+}
+
+.avatprice{
+    top: -1.2vw;
+    right: 0.5vw;
+    position: absolute;
+    font-size: 1.2vw;
+    font-family: block;
+}
+
+.sprit{
+    width: 14vw;
+    height: 14vw;
+    margin: 0.5vw;
+    cursor: pointer;
+    position: relative;
+    border-color: #989898;
+    border-radius: 3vw;
+    border-style: solid;
+    border-width: 0.6vw;
+    background-color: #e7e7e7;
+}
+
+.spritback{
+    top: 2.8vw;
+    left: 0vw;
+    width: 14vw;
+    height: 8vw;
+    position: absolute;
+    background-color: #222222;
+}
+
+.spritcoin{
+    top: 0.1vw;
+    right: 8.2vw;
+    width: 2.4vw;
+    position: absolute;
+}
+
+.spritname{
+    top: 11.4vw;
+    left: 0vw;
+    width: 14vw;
+    z-index: 8;
+    position: absolute;
+    font-size: 2vw;
+    text-align: center;
+    transition: 0.1s;
+    font-family: block;
+}
+
+.spritline2{
+    top: 10.2vw;
+    width: 14vw;
+    cursor: relative;
+    height: 0.5vw;
+    z-index: 3;
+    position: relative;
+    background-color: #989898;
+}
+
+.spritlock1{
+    top: 0vw;
+    left: 0vw;
+    width: inherit;
+    height: inherit;
+    opacity: 0.4;
+    z-index: 9;
+    position: absolute;
+    border-radius: 2.3vw;
+    background-color: #aeaeae;
+}
+
+.spritlock2{
+    top: 0.30vw;
+    left: 1vw;
+    width: 2vw;
+    height: 2vw;
+    z-index: 10;
+    position: absolute;
+}
+
+.spritprice{
+    top: -2.4vw;
+    right: 0.9vw;
+    position: absolute;
+    font-size: 2.4vw;
+    font-family: block;
+}

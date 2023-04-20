@@ -37,6 +37,18 @@ class Users(Resource):
             db.session.commit()
             session['user_id'] = new_user.id
 
+            usergame = UserGame(
+                game_id = 1,
+                user_id = new_user.id
+            )
+            db.session.add(usergame)
+            usersprite = UserSprite(
+                sprite_id = 1,
+                user_id = new_user.id
+            )
+            db.session.add(usersprite)
+            db.session.commit()
+
             return make_response(jsonify(new_user.to_dict()), 201)
         
         except ValueError as e:
@@ -115,63 +127,88 @@ class SpritesById(Resource):
 
 api.add_resource(SpritesById, '/sprites/<int:id>')
 
-# #/usergames
-# class UserGames(Resource):
-#     #POST
-#     def post(self):
-#         try:
-#             r_json = request.get_json()
-#             new_usergame = UserGame(
-#                 game_id = r_json['game_id'],
-#                 user_id = r_json['user_id']
-#             )
+#/usergames
+class UserGames(Resource):
+    #POST
+    def post(self):
+        try:
+            r_json = request.get_json()
+            new_usergame = UserGame(
+                game_id = r_json['game_id'],
+                user_id = r_json['user_id']
+            )
 
-#             if not User.query.filter(User.id == new_usergame.user_id).first() or not Game.query.filter(Game.id == new_usergame.game_id).first():
-#                 return make_response({'error': 'Invalid Game or User ID!'}, 400)
+            db.session.add(new_usergame)
+            db.session.commit()
 
-#             db.session.add(new_usergame)
-#             db.session.commit()
+            return make_response(jsonify(new_usergame.to_dict()), 201)
+        except ValueError as e:
+            return make_response({'error': e.__str__()}, 400)
 
-#             return make_response(jsonify(new_usergame.to_dict()), 201)
-#         except ValueError as e:
-#             return make_response({'error': e.__str__()}, 400)
+api.add_resource(UserGames, '/usergames')
 
-# api.add_resource(UserGames, '/usergames')
+#/useravatars
+class UserAvatars(Resource):
+    #POST
+    def post(self):
+        try:
+            r_json = request.get_json()
+            new_useravatar = UserAvatar(
+                avatar_id = r_json['avatar_id'],
+                user_id = r_json['user_id']
+            )
 
-# #/usergames/:id
-# class UserGameById(Resource):
-#     #PATCH
-#     def patch(self, id):
-#         usergame = UserGame.query.filter_by(id = id).first()
+            db.session.add(new_useravatar)
+            db.session.commit()
 
-#         if not usergame:
-#             return make_response({ 'error': 'UserGame Not Found!'}, 404)
+            return make_response(jsonify(new_useravatar.to_dict()), 201)
+        except ValueError as e:
+            return make_response({'error': e.__str__()}, 400)
 
-#         try:
-#             r_json = request.get_json()
-#             for key in r_json:
-#                 setattr(usergame, key, r_json[key])
+api.add_resource(UserAvatars, '/useravatars')
+
+#/usersprites
+class UserSprites(Resource):
+    #POST
+    def post(self):
+        try:
+            r_json = request.get_json()
+            new_usersprite = UserSprite(
+                sprite_id = r_json['sprite_id'],
+                user_id = r_json['user_id']
+            )
+
+            db.session.add(new_usersprite)
+            db.session.commit()
+
+            return make_response(jsonify(new_usersprite.to_dict()), 201)
+        except ValueError as e:
+            return make_response({'error': e.__str__()}, 400)
+
+api.add_resource(UserSprites, '/usersprites')
+
+#/usergames/:id
+class UserGameById(Resource):
+    #PATCH
+    def patch(self, id):
+        usergame = UserGame.query.filter_by(id = id).first()
+
+        if not usergame:
+            return make_response({ 'error': 'UserGame Not Found!'}, 404)
+
+        try:
+            r_json = request.get_json()
+            for key in r_json:
+                setattr(usergame, key, r_json[key])
         
-#             db.session.add(usergame)
-#             db.session.commit()
+            db.session.add(usergame)
+            db.session.commit()
 
-#             return make_response(usergame.to_dict(), 200)
-#         except ValueError as e:
-#             return make_response({'error': e.__str__()}, 400)
-
-#     #DELETE
-#     def delete(self, id):
-#         usergame = UserGame.query.filter_by(id = id).first()
-
-#         if not usergame:
-#             return make_response({'error': 'UserGame Not Found!'}, 404)
-        
-#         db.session.delete(usergame)
-#         db.session.commit()
-
-#         return make_response('', 204)
+            return make_response(usergame.to_dict(), 200)
+        except ValueError as e:
+            return make_response({'error': e.__str__()}, 400)
     
-# api.add_resource(UserGameById, '/usergames/<int:id>')
+api.add_resource(UserGameById, '/usergames/<int:id>')
 
 class Login(Resource):
     def post(self):

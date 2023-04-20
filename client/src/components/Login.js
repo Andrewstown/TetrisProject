@@ -82,9 +82,9 @@ export default function Login({updateUser}){
             <input type="password" name="password" placeholder="Password..."/>
             {click ? <input type="password" name="confirm" placeholder="Confirm Password..."/> : null}
             <button type="submit"> {click ? "Sign up" : "Login"}</button> 
-            <button onClick={handleClick}>{(click ? `Already` : `Don't`) + ` have an account?`}</button>
             {error ? <h3 className="error">{error}</h3>: null}
-        </form> 
+        </form>
+        <button className='swap' onClick={handleClick}>{(click ? `Already` : `Don't`) + ` have an account?`}</button>
     </div>
     </>)
 }
