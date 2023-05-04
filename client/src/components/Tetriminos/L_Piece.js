@@ -8,7 +8,7 @@ export default class J_Piece extends Tetrimino{
         this.color = 2
         this.rotate = rotateNum => {
             switch(rotateNum){
-                case 0: 
+                case 0:
                     this.body = [[0, 0, 1, 0], [1, 1, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0,]]
                     this.leftMost = [[2, 0], [0, 1]]
                     this.rightMost = [[2, 0], [2, 1]]

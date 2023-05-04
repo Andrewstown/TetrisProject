@@ -15,7 +15,7 @@ export default function Games({updateUser, updateGame, handleLogin}){
         const noise = new Audio(`/sounds/${soundr}.wav`)
         noise.preservesPitch = false
         noise.playbackRate = rate
-        noise.volume = 0.4
+        noise.volume = 0.5
         noise.play()
     }
 
