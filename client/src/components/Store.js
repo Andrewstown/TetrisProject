@@ -29,7 +29,7 @@ export default function Store({updateUser, handleLogin}){
         })
 
         music = new Audio(`/sounds/shop.mp3`)
-        music.volume = 0.5
+        music.volume = 0.7
         music.loop = true
 
         fetch('/avatar')
@@ -46,7 +46,7 @@ export default function Store({updateUser, handleLogin}){
             const noise = new Audio(`/sounds/${soundr}.wav`)
             noise.preservesPitch = false
             noise.playbackRate = rate
-            noise.volume = 0.5
+            noise.volume = 0.4
             noise.play()
         }
     }

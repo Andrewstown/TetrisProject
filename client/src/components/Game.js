@@ -217,7 +217,7 @@ export default function Game({updateUser, game, handleLogin}){
             }else{
                 timerun = true
                 music = new Audio(`/sounds/${gamemode}.mp3`)
-                music.volume = 0.5
+                music.volume = 0.7
                 music.loop = true
                 if (player) music.play()
                 spawnPiece()
@@ -533,7 +533,7 @@ export default function Game({updateUser, game, handleLogin}){
     const playSound = (soundr, rate = 1) => {
         if ((soundr[0] == 's' && sound) || (soundr[0] == 'v' && voice)){
             const noise = new Audio(`/sounds/${soundr}.wav`)
-            noise.volume = 0.5
+            noise.volume = 0.6
             noise.preservesPitch = false
             noise.playbackRate = rate
             noise.play()
